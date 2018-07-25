@@ -7,7 +7,7 @@ function trim (string) {
 }
 
 function runCommand (version, command) {
-	return exec(`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm exec --silent ${version} ${command}`)
+	return exec(`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use --silent ${version} && ${command}`)
 }
 
 function runVersion (version) {

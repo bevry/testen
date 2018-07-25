@@ -10,11 +10,11 @@ const { parseExitCode } = require('./util.js')
 const fs = require('fs')
 const minimist = require('minimist')
 const update = require('update-notifier')
-const log = require('log-update')
 const textTable = require('text-table')
-const Hinata = require('hinata')
 const travisOrCircle = require('travis-or-circle')
 const stringWidth = require('string-width')
+const Logger = require('logger-clearable')
+const Spinner = require('spinner-title')
 
 // Fetch our own package configuration, and alert the user if there is an update
 const testenPackage = require('../package.json')
@@ -32,7 +32,6 @@ const cli = minimist(process.argv.slice(2), {
 	'--': true,
 	'alias': {
 		j: 'json',
-		s: 'serial',
 		n: 'node'
 	},
 	'string': ['node']
@@ -46,7 +45,8 @@ if (cli.help) {
 		'',
 		'  -j/--json:             Output the test results as JSON',
 		'  -n/--node [version]:   Add a node version to test',
-		'  -s/--serial:           Run tests serially, one after the other',
+		'  --serial:              Run tests serially, one after the other',
+		'  --spinner [spinner]    Which spinner to use in the title bar',
 		'  --verbose:             Report details about all statuses, not just failures',
 		'  --version:             Output the version of testen',
 		'  --help:                Output this help',
@@ -66,7 +66,7 @@ if (cli.version) {
 function table (result) {
 	return textTable(result, { stringLength: stringWidth })
 }
-const spin = new Hinata({ char: '●', text: '  ', prepend: true, spacing: 1 })
+// const spin = new Hinata({ char: '●', text: '  ', prepend: true, spacing: 1 })
 
 // Determine the test script
 let command = cli['--'].join(' ')
@@ -94,6 +94,24 @@ if (nodeVersions.join('') === '') {
 	nodeVersions.push('current', 'stable', 'system')
 }
 
+// Prepare outputs
+const logger = new Logger()
+const spinner = new Spinner({ style: cli.spinner || 'monkey', interval: 1000 })
+function log (versions) {
+	const messages = []
+	versions.forEach(function (V) {
+		if (V.success === false || cli.verbose) {
+			messages.push(V.message)
+		}
+	})
+	if (messages.length) {
+		return '\n' + messages.join('\n\n') + '\n\n' + table(versions.table) + '\n\n'
+	}
+	else {
+		return '\n' + table(versions.table) + '\n\n'
+	}
+}
+
 // Run the versions
 async function run (nodeVersions) {
 	// Load the actual versions
@@ -101,30 +119,15 @@ async function run (nodeVersions) {
 
 	// Prepare
 	function update () {
-		const messages = []
-		versions.forEach(function (V) {
-			if (V.success === false || cli.verbose) {
-				messages.push(V.message)
-			}
-		})
-		if (messages.length) {
-			log('\n' + messages.join('\n\n') + '\n\n' + table(versions.table) + '\n')
-		}
-		else {
-			log('\n' + table(versions.table) + '\n')
-		}
+		logger.queue(() => log(versions))
 	}
 
 	// Output
 	if (!cli.json) {
-		// Start the spinner
-		spin.length = versions.length
-		spin.start()
+		// start the spinner
+		spinner.start()
 
-		// Output the initial table
-		log('\n' + table(versions.table) + '\n')
-
-		// Keep the user updated with new events
+		// keep the user updated with new events
 		versions.on('update', update)
 	}
 
@@ -136,7 +139,7 @@ async function run (nodeVersions) {
 	// Output
 	if (!cli.json) {
 		// Cleanup
-		spin.stop()
+		spinner.stop()
 		versions.removeListener('update', update)
 	}
 	else {
@@ -151,10 +154,10 @@ async function run (nodeVersions) {
 // Actually run the versions
 run(nodeVersions)
 	.then(function (versions) {
-		process.exit(versions.success ? 0 : 1)
+		process.exitCode = versions.success ? 0 : 1
 	})
 	.catch(function (err) {
-		spin.stop()
+		spinner.stop()
 		console.error(err)
-		process.exit(parseExitCode(err.code) || 1)
+		process.exitCode = parseExitCode(err.code) || 1
 	})

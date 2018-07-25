@@ -1,6 +1,6 @@
 {
   "name": "@bevry/testen",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "preferGlobal": true,
   "description": "Run your tests locally against multiple node.js versions",
   "homepage": "https://github.com/bevry/testen",
@@ -29,9 +29,7 @@
       "flattr",
       "paypal",
       "bitcoin",
-      "wishlist",
-      "---",
-      "slackin"
+      "wishlist"
     ],
     "config": {
       "patreonUsername": "bevry",
@@ -39,8 +37,7 @@
       "flattrUsername": "balupton",
       "paypalURL": "https://bevry.me/paypal",
       "bitcoinURL": "https://bevry.me/bitcoin",
-      "wishlistURL": "https://bevry.me/wishlist",
-      "slackinURL": "https://slack.bevry.me"
+      "wishlistURL": "https://bevry.me/wishlist"
     }
   },
   "author": "2016-2017 EGOIST <0x142857@gmail.com> (http://egoist.moe/hi), 2018+ Benjamin Lupton <b@lupton.cc> (http://balupton.com)",
@@ -65,17 +62,15 @@
       ]
     }
   ],
-  "bin": {
-    "testen": "testen"
-  },
+  "bin": "bin",
   "main": "source/index.js",
   "dependencies": {
     "chalk": "^2.4.1",
     "figures": "^2.0.0",
-    "hinata": "^0.1.0",
-    "log-update": "^2.3.0",
+    "logger-clearable": "^1.0.0",
     "minimist": "^1.2.0",
     "semver": "^5.5.0",
+    "spinner-title": "^1.0.0",
     "string-width": "^2.0.0",
     "text-table": "^0.2.0",
     "then-exec": "0.0.1",
@@ -107,7 +102,6 @@
     "our:release:check-dirty": "git diff --exit-code",
     "our:release:tag": "export MESSAGE=$(cat ./HISTORY.md | sed -n \"/## v$npm_package_version/,/##/p\" | sed 's/## //' | awk 'NR>1{print buf}{buf = $0}') && test \"$MESSAGE\" || (echo 'proper changelog entry not found' && exit -1) && git tag v$npm_package_version -am \"$MESSAGE\"",
     "our:release:push": "git push origin master && git push origin --tags",
-    "start": "./testen",
     "test": "node ./source/test.js"
   },
   "maintainers": [],

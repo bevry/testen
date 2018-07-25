@@ -1,5 +1,10 @@
 # History
 
+## v3.0.1 2018 July 27
+- Fixed package installation under some circumstances
+- Fixed duplicate log messages from showing under some circumstances
+- Moved the spinner to the title bar
+
 ## v3.0.0 2018 July 22
 - New features
     - [Now installs missing Node.js versions](https://github.com/egoist/testen/issues/15)
