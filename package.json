@@ -78,7 +78,7 @@
     "update-notifier": "^2.5.0"
   },
   "devDependencies": {
-    "assert-helpers": "^4.5.1",
+    "assert-helpers": "^5.0.0",
     "documentation": "^8.0.2",
     "eslint": "^5.2.0",
     "projectz": "^1.4.0",
