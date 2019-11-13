@@ -1,7 +1,6 @@
 {
   "name": "@bevry/testen",
-  "version": "3.0.1",
-  "preferGlobal": true,
+  "version": "3.1.0",
   "description": "Run your tests locally against multiple node.js versions",
   "homepage": "https://github.com/bevry/testen",
   "license": "MIT",
@@ -25,22 +24,36 @@
       "daviddmdev",
       "---",
       "patreon",
-      "opencollective",
       "flattr",
+      "liberapay",
+      "buymeacoffee",
+      "opencollective",
+      "crypto",
       "paypal",
-      "bitcoin",
       "wishlist"
     ],
     "config": {
-      "patreonUsername": "bevry",
-      "opencollectiveUsername": "bevry",
+      "buymeacoffeeUsername": "balupton",
+      "cryptoURL": "https://bevry.me/crypto",
       "flattrUsername": "balupton",
+      "liberapayUsername": "bevry",
+      "opencollectiveUsername": "bevry",
+      "patreonUsername": "bevry",
       "paypalURL": "https://bevry.me/paypal",
-      "bitcoinURL": "https://bevry.me/bitcoin",
-      "wishlistURL": "https://bevry.me/wishlist"
+      "wishlistURL": "https://bevry.me/wishlist",
+      "travisTLD": "com"
     }
   },
-  "author": "2016-2017 EGOIST <0x142857@gmail.com> (http://egoist.moe/hi), 2018+ Benjamin Lupton <b@lupton.cc> (http://balupton.com)",
+  "funding": "https://bevry.me/fund",
+  "author": "2016-2017 Kevin Titor <0x142857@gmail.com> (http://patreon.com/egoist), 2018+ Benjamin Lupton <b@lupton.cc> (http://balupton.com)",
+  "maintainers": [
+    "Benjamin Lupton <b@lupton.cc> (http://balupton.com)"
+  ],
+  "contributors": [
+    "Kevin Titor <0x142857@gmail.com> (http://patreon.com/egoist)",
+    "Benjamin Lupton <b@lupton.cc> (http://balupton.com)",
+    "Greenkeeper <support@greenkeeper.io> (http://greenkeeper.io/)"
+  ],
   "bugs": {
     "url": "https://github.com/bevry/testen/issues"
   },
@@ -53,61 +66,79 @@
   },
   "editions": [
     {
-      "description": "Source + ESNext + Require",
+      "description": "esnext source code with require for modules",
       "directory": "source",
       "entry": "index.js",
-      "syntaxes": [
+      "tags": [
+        "javascript",
         "esnext",
         "require"
-      ]
+      ],
+      "engines": {
+        "node": "8 || 10 || 12 || 13",
+        "browsers": false
+      }
     }
   ],
-  "bin": "bin",
+  "bin": "bin.js",
   "main": "source/index.js",
   "dependencies": {
-    "chalk": "^2.4.1",
-    "figures": "^2.0.0",
-    "logger-clearable": "^1.0.0",
+    "chalk": "^3.0.0",
+    "figures": "^3.1.0",
+    "logger-clearable": "^1.0.1",
     "minimist": "^1.2.0",
-    "semver": "^5.5.0",
-    "spinner-title": "^1.0.0",
-    "string-width": "^2.0.0",
+    "semver": "^6.3.0",
+    "spinner-title": "^1.1.0",
+    "string-width": "^4.2.0",
     "text-table": "^0.2.0",
     "then-exec": "0.0.1",
-    "travis-or-circle": "^1.0.0",
-    "update-notifier": "^2.5.0"
+    "travis-or-circle": "^1.0.2",
+    "update-notifier": "^3.0.1"
   },
   "devDependencies": {
-    "assert-helpers": "^4.5.1",
-    "documentation": "^8.0.2",
-    "eslint": "^5.2.0",
-    "projectz": "^1.4.0",
-    "surge": "^0.20.1"
+    "assert-helpers": "^5.3.0",
+    "eslint": "^6.6.0",
+    "eslint-config-bevry": "^1.2.1",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "jsdoc": "^3.6.3",
+    "kava": "^3.2.0",
+    "minami": "^1.2.3",
+    "prettier": "^1.19.1",
+    "projectz": "^1.10.0",
+    "surge": "^0.21.3",
+    "valid-directory": "^1.0.0"
   },
   "scripts": {
-    "our:setup": "npm run our:setup:npm",
-    "our:setup:npm": "npm install",
-    "our:clean": "rm -Rf ./docs ./es2015 ./es5 ./out",
+    "our:clean": "rm -Rf ./docs ./edition* ./es2015 ./es5 ./out ./.next",
     "our:compile": "echo no need for this project",
-    "our:meta": "npm run our:meta:docs && npm run our:meta:projectz",
-    "our:meta:docs": "documentation build -f html -o ./docs -g --shallow ./source/**.js",
-    "our:meta:projectz": "projectz compile",
-    "our:verify": "npm run our:verify:eslint",
-    "our:verify:eslint": "eslint --fix ./source",
     "our:deploy": "echo no need for this project",
-    "our:test": "npm run our:verify && npm test",
+    "our:meta": "npm run our:meta:docs && npm run our:meta:projectz",
+    "our:meta:docs": "npm run our:meta:docs:jsdoc",
+    "our:meta:docs:jsdoc": "rm -Rf ./docs && jsdoc --recurse --pedantic --access all --destination ./docs --package ./package.json --readme ./README.md --template ./node_modules/minami ./source && mv ./docs/$npm_package_name/$npm_package_version/* ./docs/ && rm -Rf ./docs/$npm_package_name/$npm_package_version",
+    "our:meta:projectz": "projectz compile",
     "our:release": "npm run our:release:prepare && npm run our:release:check-changelog && npm run our:release:check-dirty && npm run our:release:tag && npm run our:release:push",
-    "our:release:prepare": "npm run our:clean && npm run our:compile && npm run our:test && npm run our:meta",
     "our:release:check-changelog": "cat ./HISTORY.md | grep v$npm_package_version || (echo add a changelog entry for v$npm_package_version && exit -1)",
     "our:release:check-dirty": "git diff --exit-code",
-    "our:release:tag": "export MESSAGE=$(cat ./HISTORY.md | sed -n \"/## v$npm_package_version/,/##/p\" | sed 's/## //' | awk 'NR>1{print buf}{buf = $0}') && test \"$MESSAGE\" || (echo 'proper changelog entry not found' && exit -1) && git tag v$npm_package_version -am \"$MESSAGE\"",
+    "our:release:prepare": "npm run our:clean && npm run our:compile && npm run our:test && npm run our:meta",
     "our:release:push": "git push origin master && git push origin --tags",
+    "our:release:tag": "export MESSAGE=$(cat ./HISTORY.md | sed -n \"/## v$npm_package_version/,/##/p\" | sed 's/## //' | awk 'NR>1{print buf}{buf = $0}') && test \"$MESSAGE\" || (echo 'proper changelog entry not found' && exit -1) && git tag v$npm_package_version -am \"$MESSAGE\"",
+    "our:setup": "npm run our:setup:install",
+    "our:setup:install": "npm install",
+    "our:test": "npm run our:verify && npm test",
+    "our:verify": "npm run our:verify:directory && npm run our:verify:eslint && npm run our:verify:prettier",
+    "our:verify:directory": "npx valid-directory",
+    "our:verify:eslint": "eslint --fix --ignore-pattern '**/*.d.ts' --ignore-pattern '**/vendor/' --ignore-pattern '**/node_modules/' --ext .mjs,.js,.jsx,.ts,.tsx ./source",
+    "our:verify:prettier": "prettier --write ./source/**",
     "test": "node ./source/test.js"
   },
-  "maintainers": [],
-  "contributors": [
-    "EGOIST <0x142857@gmail.com> (http://egoist.moe/hi)",
-    "Benjamin Lupton <b@lupton.cc> (http://balupton.com)",
-    "Greenkeeper (http://greenkeeper.io/)"
-  ]
+  "eslintConfig": {
+    "extends": [
+      "bevry"
+    ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  }
 }

@@ -30,29 +30,31 @@ const userPackage = fs.existsSync(userPackagePath)
 // Parse the CLI options
 const cli = minimist(process.argv.slice(2), {
 	'--': true,
-	'alias': {
+	alias: {
 		j: 'json',
 		n: 'node'
 	},
-	'string': ['node']
+	string: ['node']
 })
 
 // Print the help
 if (cli.help) {
-	console.log([
-		'',
-		'Usage:',
-		'',
-		'  -j/--json:             Output the test results as JSON',
-		'  -n/--node [version]:   Add a node version to test',
-		'  --serial:              Run tests serially, one after the other',
-		'  --spinner [spinner]    Which spinner to use in the title bar',
-		'  --verbose:             Report details about all statuses, not just failures',
-		'  --version:             Output the version of testen',
-		'  --help:                Output this help',
-		'  -- [command]:          The test command you expect',
-		''
-	].join('\n'))
+	console.log(
+		[
+			'',
+			'Usage:',
+			'',
+			'  -j/--json:             Output the test results as JSON',
+			'  -n/--node [version]:   Add a node version to test',
+			'  --serial:              Run tests serially, one after the other',
+			'  --spinner [spinner]    Which spinner to use in the title bar',
+			'  --verbose:             Report details about all statuses, not just failures',
+			'  --version:             Output the version of testen',
+			'  --help:                Output this help',
+			'  -- [command]:          The test command you expect',
+			''
+		].join('\n')
+	)
 	process.exit()
 }
 
@@ -63,7 +65,7 @@ if (cli.version) {
 }
 
 // Prepare
-function table (result) {
+function table(result) {
 	return textTable(result, { stringLength: stringWidth })
 }
 // const spin = new Hinata({ char: '●', text: '  ', prepend: true, spacing: 1 })
@@ -71,24 +73,22 @@ function table (result) {
 // Determine the test script
 let command = cli['--'].join(' ')
 if (!command) {
-	command = (userPackage.testen && userPackage.testen.command)
-		? userPackage.testen.command
-		: 'npm test'
+	command =
+		userPackage.testen && userPackage.testen.command
+			? userPackage.testen.command
+			: 'npm test'
 }
 
 // Get node versions from CLI arguments
 // Otherwise package.json:testen:node
 // Otherwise travis or circle
 // Otherwise current and latest
-const nodeVersions = (
-	cli.node
-		? (
-			[].concat(cli.node)
-		)
-		: (
-			(userPackage.testen && userPackage.testen.node) || travisOrCircle() || []
-		)
-).join(' ').split(/[,\s]+/)
+const nodeVersions = (cli.node
+	? [].concat(cli.node)
+	: (userPackage.testen && userPackage.testen.node) || travisOrCircle() || []
+)
+	.join(' ')
+	.split(/[,\s]+/)
 if (nodeVersions.join('') === '') {
 	nodeVersions.pop()
 	nodeVersions.push('current', 'stable', 'system')
@@ -97,28 +97,29 @@ if (nodeVersions.join('') === '') {
 // Prepare outputs
 const logger = new Logger()
 const spinner = new Spinner({ style: cli.spinner || 'monkey', interval: 1000 })
-function log (versions) {
+function log(versions) {
 	const messages = []
-	versions.forEach(function (V) {
+	versions.forEach(function(V) {
 		if (V.success === false || cli.verbose) {
 			messages.push(V.message)
 		}
 	})
 	if (messages.length) {
-		return '\n' + messages.join('\n\n') + '\n\n' + table(versions.table) + '\n\n'
-	}
-	else {
+		return (
+			'\n' + messages.join('\n\n') + '\n\n' + table(versions.table) + '\n\n'
+		)
+	} else {
 		return '\n' + table(versions.table) + '\n\n'
 	}
 }
 
 // Run the versions
-async function run (nodeVersions) {
+async function run(nodeVersions) {
 	// Load the actual versions
 	const versions = new Versions(nodeVersions)
 
 	// Prepare
-	function update () {
+	function update() {
 		logger.queue(() => log(versions))
 	}
 
@@ -141,8 +142,7 @@ async function run (nodeVersions) {
 		// Cleanup
 		spinner.stop()
 		versions.removeListener('update', update)
-	}
-	else {
+	} else {
 		// Output
 		console.log(JSON.stringify(versions.json, null, '  '))
 	}
@@ -153,10 +153,10 @@ async function run (nodeVersions) {
 
 // Actually run the versions
 run(nodeVersions)
-	.then(function (versions) {
+	.then(function(versions) {
 		process.exitCode = versions.success ? 0 : 1
 	})
-	.catch(function (err) {
+	.catch(function(err) {
 		spinner.stop()
 		console.error(err)
 		process.exitCode = parseExitCode(err.code) || 1

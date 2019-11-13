@@ -16,7 +16,7 @@ const { runCommand, runVersion, runInstall, uniq, trim } = require('./util.js')
  * @public
  */
 class Version extends EventEmitter {
-	constructor (version) {
+	constructor(version) {
 		super()
 
 		/**
@@ -79,11 +79,11 @@ class Version extends EventEmitter {
 	 * @property {string?} alias
 	 * @public
 	 */
-	get alias () {
+	get alias() {
 		return this.aliases[0]
 	}
 
-	set alias (alias) {
+	set alias(alias) {
 		if (alias) {
 			const aliases = this.aliases.concat(alias)
 			this.aliases = uniq(aliases)
@@ -96,7 +96,7 @@ class Version extends EventEmitter {
 	 * @returns {this}
 	 * @private
 	 */
-	reset () {
+	reset() {
 		this.success = null
 		this.error = null
 		this.stdout = null
@@ -109,7 +109,7 @@ class Version extends EventEmitter {
 	 * @returns {this}
 	 * @private
 	 */
-	update () {
+	update() {
 		this.emit('update', this)
 		return this
 	}
@@ -121,7 +121,7 @@ class Version extends EventEmitter {
 	 * @returns {Promise}
 	 * @public
 	 */
-	async load () {
+	async load() {
 		this.status = 'loading'
 		this.reset().update()
 
@@ -130,16 +130,14 @@ class Version extends EventEmitter {
 			if (result.error.toString().indexOf('not yet installed') !== -1) {
 				this.status = 'missing'
 				this.success = false
-			}
-			else {
+			} else {
 				this.status = 'failed'
 				this.success = false
 			}
 			this.error = result.error
 			this.stdout = (result.stdout || '').toString()
 			this.stderr = (result.stderr || '').toString()
-		}
-		else {
+		} else {
 			this.version = result.stdout.toString()
 			this.status = 'loaded'
 		}
@@ -154,7 +152,7 @@ class Version extends EventEmitter {
 	 * @returns {Promise}
 	 * @public
 	 */
-	async install () {
+	async install() {
 		if (this.status !== 'missing') return this
 
 		this.status = 'installing'
@@ -167,8 +165,7 @@ class Version extends EventEmitter {
 			this.success = false
 			this.stdout = (result.stdout || '').toString()
 			this.stderr = (result.stderr || '').toString()
-		}
-		else {
+		} else {
 			this.status = 'installed'
 			this.update()
 			await this.load()
@@ -184,7 +181,7 @@ class Version extends EventEmitter {
 	 * @returns {Promise}
 	 * @public
 	 */
-	async test (command) {
+	async test(command) {
 		if (this.status !== 'loaded') return this
 
 		this.status = 'running'
@@ -212,7 +209,7 @@ class Version extends EventEmitter {
 	 * @property {Array<string>} row - [icon, version+alias, status, duration]
 	 * @public
 	 */
-	get row () {
+	get row() {
 		// Cache
 		if (this._row && this._row[0] === this.status) return this._row[1]
 
@@ -220,30 +217,26 @@ class Version extends EventEmitter {
 			this.success === null
 				? chalk.dim(figures.circle)
 				: this.success
-					? chalk.green(figures.tick)
-					: chalk.red(figures.cross)
+				? chalk.green(figures.tick)
+				: chalk.red(figures.cross)
 
 		const result =
 			this.success === null
 				? chalk.dim(this.status)
 				: this.success
-					? chalk.green(this.status)
-					: chalk.red(this.status)
+				? chalk.green(this.status)
+				: chalk.red(this.status)
 
 		// note that caching prevents realtime updates of duration time
-		const duration =
-			this.started
-				? chalk.dim(`${(this.finished || new Date()) - this.started}ms`)
-				: ''
+		const duration = this.started
+			? chalk.dim(`${(this.finished || new Date()) - this.started}ms`)
+			: ''
 
-		const aliases = this.aliases.length ? chalk.dim(` [${this.aliases.join('|')}]`) : ''
+		const aliases = this.aliases.length
+			? chalk.dim(` [${this.aliases.join('|')}]`)
+			: ''
 
-		const row = [
-			'  ' + indicator,
-			this.version + aliases,
-			result,
-			duration
-		]
+		const row = ['  ' + indicator, this.version + aliases, result, duration]
 
 		// Cache
 		this._row = [this.status, row]
@@ -256,68 +249,48 @@ class Version extends EventEmitter {
 	 * @property {string} message
 	 * @public
 	 */
-	get message () {
+	get message() {
 		// Cache
-		if (this._message && this._message[0] === this.status) return this._message[1]
+		if (this._message && this._message[0] === this.status)
+			return this._message[1]
 
 		// Prepare
 		const parts = []
 
 		// fetch heading
-		const heading = `Node version ${chalk.underline(this.version)} ${this.status}`
+		const heading = `Node version ${chalk.underline(this.version)} ${
+			this.status
+		}`
 		if (this.status === 'missing') {
-			parts.push(
-				chalk.bold(chalk.red(heading))
-			)
-		}
-		else if (this.success === true) {
-			parts.push(
-				chalk.bold(chalk.green(heading))
-			)
-		}
-		else if (this.success === false) {
-			parts.push(
-				chalk.bold(chalk.red(heading))
-			)
-		}
-		else {
+			parts.push(chalk.bold(chalk.red(heading)))
+		} else if (this.success === true) {
+			parts.push(chalk.bold(chalk.green(heading)))
+		} else if (this.success === false) {
+			parts.push(chalk.bold(chalk.red(heading)))
+		} else {
 			// running, loading, etc - shown in verbose mode
-			parts.push(
-				chalk.bold(chalk.dim(heading))
-			)
+			parts.push(chalk.bold(chalk.dim(heading)))
 		}
 
 		// Output the command that was run
 		if (this.error) {
-			parts.push(
-				chalk.red(this.error.message.split('\n')[0])
-			)
+			parts.push(chalk.red(this.error.message.split('\n')[0]))
 		}
 
 		// Output stdout and stdderr
 		if (this.status === 'missing') {
-			parts.push(
-				chalk.red(`You need to run: nvm install ${this.version}`)
-			)
-		}
-		else {
+			parts.push(chalk.red(`You need to run: nvm install ${this.version}`))
+		} else {
 			const stdout = trim(this.stdout || '')
 			const stderr = trim(this.stderr || '')
 			if (!stdout && !stderr) {
-				parts.push(
-					chalk.grey('no output')
-				)
-			}
-			else {
+				parts.push(chalk.grey('no output'))
+			} else {
 				if (stdout) {
-					parts.push(
-						stdout
-					)
+					parts.push(stdout)
 				}
 				if (stderr) {
-					parts.push(
-						chalk.red(stderr)
-					)
+					parts.push(chalk.red(stderr))
 				}
 			}
 		}

@@ -24,7 +24,7 @@ const semver = require('semver')
  * @public
  */
 class Versions extends EventEmitter {
-	constructor (versions) {
+	constructor(versions) {
 		super()
 
 		/**
@@ -32,7 +32,7 @@ class Versions extends EventEmitter {
 		 * @type {Array<Version>}
 		 * @public
 		 */
-		this.array = versions.map((v) => {
+		this.array = versions.map(v => {
 			const V = new Version(v)
 			V.on('update', (...args) => this.emit('update', ...args))
 			return V
@@ -50,20 +50,17 @@ class Versions extends EventEmitter {
 	 * @static
 	 * @public
 	 */
-	static comparator (left, right) {
+	static comparator(left, right) {
 		const a = semver.coerce(left.version)
 		const b = semver.coerce(right.version)
 
 		if (!a) {
 			return 1
-		}
-		else if (!b) {
+		} else if (!b) {
 			return -1
-		}
-		else if (semver.gt(a, b)) {
+		} else if (semver.gt(a, b)) {
 			return 1
-		}
-		else if (semver.lt(a, b)) {
+		} else if (semver.lt(a, b)) {
 			return -1
 		}
 		return 0
@@ -75,7 +72,7 @@ class Versions extends EventEmitter {
 	 * @returns {Array<Version>}
 	 * @public
 	 */
-	map (...args) {
+	map(...args) {
 		return this.array.map(...args)
 	}
 
@@ -85,7 +82,7 @@ class Versions extends EventEmitter {
 	 * @returns {this}
 	 * @public
 	 */
-	forEach (...args) {
+	forEach(...args) {
 		this.array.forEach(...args)
 		return this
 	}
@@ -95,7 +92,7 @@ class Versions extends EventEmitter {
 	 * @returns {this}
 	 * @public
 	 */
-	sort () {
+	sort() {
 		this.array.sort(Versions.comparator)
 		return this
 	}
@@ -105,13 +102,12 @@ class Versions extends EventEmitter {
 	 * @returns {this}
 	 * @public
 	 */
-	compact () {
+	compact() {
 		const map = {}
-		this.array.forEach(function (V) {
+		this.array.forEach(function(V) {
 			if (map[V.version]) {
 				map[V.version].alias = V.alias
-			}
-			else {
+			} else {
 				map[V.version] = V
 			}
 		})
@@ -124,8 +120,8 @@ class Versions extends EventEmitter {
 	 * @property {boolean} success
 	 * @public
 	 */
-	get success () {
-		const failure = this.array.some((V) => V.success === false)
+	get success() {
+		const failure = this.array.some(V => V.success === false)
 		return !failure
 	}
 
@@ -134,7 +130,7 @@ class Versions extends EventEmitter {
 	 * @property {number} length
 	 * @public
 	 */
-	get length () {
+	get length() {
 		return this.array.length
 	}
 
@@ -143,9 +139,9 @@ class Versions extends EventEmitter {
 	 * @property {JSONResult} json
 	 * @public
 	 */
-	get json () {
+	get json() {
 		const results = { success: true }
-		this.array.forEach(function (V) {
+		this.array.forEach(function(V) {
 			results[V.status] = (results[V.status] || []).concat(V.version)
 			if (V.success === false) results.success = false
 		})
@@ -157,8 +153,8 @@ class Versions extends EventEmitter {
 	 * @property {Array<Array>} table
 	 * @public
 	 */
-	get table () {
-		return this.array.map((V) => V.row)
+	get table() {
+		return this.array.map(V => V.row)
 	}
 
 	/**
@@ -166,8 +162,8 @@ class Versions extends EventEmitter {
 	 * @property {Array<Array>} table
 	 * @public
 	 */
-	get messages () {
-		return this.array.map((V) => V.message)
+	get messages() {
+		return this.array.map(V => V.message)
 	}
 
 	/**
@@ -175,10 +171,8 @@ class Versions extends EventEmitter {
 	 * @param {boolean} [compact=true]
 	 * @returns {Promise}
 	 */
-	async load (compact = true) {
-		await Promise.all(
-			this.array.map((V) => V.load())
-		)
+	async load(compact = true) {
+		await Promise.all(this.array.map(V => V.load()))
 		if (compact) this.compact()
 		this.sort()
 		return this
@@ -188,10 +182,8 @@ class Versions extends EventEmitter {
 	 * Installs any missing versions, by calling {@link Version#install} on each of them.
 	 * @returns {Promise}
 	 */
-	async install () {
-		await Promise.all(
-			this.array.map((V) => V.install())
-		)
+	async install() {
+		await Promise.all(this.array.map(V => V.install()))
 		return this
 	}
 
@@ -201,15 +193,13 @@ class Versions extends EventEmitter {
 	 * @param {boolean} [serial=false] - whether or not to run them one at a time, one after another
 	 * @returns {Promise}
 	 */
-	async test (command, serial = false) {
+	async test(command, serial = false) {
 		if (serial) {
 			for (const V of this.array) {
 				await V.test(command)
 			}
 		}
-		await Promise.all(
-			this.array.map((V) => V.test(command))
-		)
+		await Promise.all(this.array.map(V => V.test(command)))
 		return this
 	}
 }
