@@ -1,6 +1,6 @@
 {
   "name": "@bevry/testen",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "description": "Run your tests locally against multiple node.js versions",
   "homepage": "https://github.com/bevry/testen",
   "license": "MIT",
@@ -23,6 +23,7 @@
       "daviddm",
       "daviddmdev",
       "---",
+      "githubsponsors",
       "patreon",
       "flattr",
       "liberapay",
@@ -33,6 +34,7 @@
       "wishlist"
     ],
     "config": {
+      "githubSponsorsUsername": "balupton",
       "buymeacoffeeUsername": "balupton",
       "cryptoURL": "https://bevry.me/crypto",
       "flattrUsername": "balupton",
@@ -80,14 +82,15 @@
     }
   ],
   "bin": "source/bin.js",
+  "type": "commonjs",
   "main": "source/index.js",
   "dependencies": {
     "chalk": "^3.0.0",
     "figures": "^3.1.0",
-    "logger-clearable": "^2.1.0",
+    "logger-clearable": "^2.3.0",
     "minimist": "^1.2.0",
     "semver": "^6.3.0",
-    "spinner-title": "^2.1.0",
+    "spinner-title": "^2.3.0",
     "string-width": "^4.2.0",
     "text-table": "^0.2.0",
     "then-exec": "0.0.1",
@@ -95,18 +98,18 @@
     "update-notifier": "^3.0.1"
   },
   "devDependencies": {
-    "assert-helpers": "^5.7.0",
+    "assert-helpers": "^5.8.0",
     "eslint": "^6.7.2",
-    "eslint-config-bevry": "^2.2.0",
+    "eslint-config-bevry": "^2.3.0",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-prettier": "^3.1.1",
     "jsdoc": "^3.6.3",
-    "kava": "^4.2.0",
+    "kava": "^4.4.0",
     "minami": "^1.2.3",
     "prettier": "^1.19.1",
-    "projectz": "^1.13.0",
+    "projectz": "^1.16.0",
     "surge": "^0.21.3",
-    "valid-directory": "^1.4.0"
+    "valid-directory": "^1.5.0"
   },
   "scripts": {
     "our:clean": "rm -Rf ./docs ./edition* ./es2015 ./es5 ./out ./.next",
