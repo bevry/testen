@@ -76,7 +76,7 @@ As JSON:
 <p>This package is published with the following editions:</p>
 
 <ul><li><code>@bevry/testen</code> aliases <code>@bevry/testen/source/index.js</code></li>
-<li><code>@bevry/testen/source/index.js</code> is esnext source code with require for modules</li></ul>
+<li><code>@bevry/testen/source/index.js</code> is esnext source code for Node.js with require for modules</li></ul>
 
 <p>Environments older than Node.js v8 may need <a href="https://babeljs.io/docs/usage/polyfill/" title="A polyfill that emulates missing ECMAScript environment features">Babel's Polyfill</a> or something similar.</p>
 
