@@ -99,7 +99,7 @@ This project provides its type information via inline <a href="http://usejsdoc.o
 
 Testen runs your tests again multiple node versions, however the testen client can only run on Node 8 or higher.
 
-Testen uses [nvm](https://github.com/creationix/nvm) behind the scens for its node.js version management.
+Testen uses [nvm](https://github.com/creationix/nvm) behind the scenes for its node.js version management.
 
 
 ### CLI Usage
@@ -108,7 +108,7 @@ You can specify the exact node versions to test your project against by using th
 This flag can occur multiple times, and also supports versions seperated by a comma.
 Such that `testen -n 8 -n 10` and `testen -n 8,10` will both use node versions 8 and 10.
 
-If you do not specify any versions via the CLI arguments, then it will use:
+If you do not specify any node versions via the CLI arguments, then it will use:
 
 - the `testen.node` property of your projects `package.json` file
 - otherwise, the travis or circle ci node versions that you have configured for your project
@@ -116,8 +116,9 @@ If you do not specify any versions via the CLI arguments, then it will use:
 
 If a node version is currently missing, it will be installed for you automatically.
 
-You can specify the extact command to run against your project by placing it after the `--` argument, for example `testen -- echo hello world` to run `echo hello world`.
+You can specify the exact command to run against your project by placing it after the `--` argument, for example `testen -- echo hello world` to run `echo hello world`.
 If you do not specify a command via the CLI, then it will use:
+
 - the `testen.command` property of your projects `package.json` file
 - otherwise, `npm test` is used
 
