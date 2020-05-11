@@ -32,9 +32,9 @@ const cli = minimist(process.argv.slice(2), {
 	'--': true,
 	alias: {
 		j: 'json',
-		n: 'node'
+		n: 'node',
 	},
-	string: ['node']
+	string: ['node'],
 })
 
 // Print the help
@@ -52,7 +52,7 @@ if (cli.help) {
 			'  --version:             Output the version of testen',
 			'  --help:                Output this help',
 			'  -- [command]:          The test command you expect',
-			''
+			'',
 		].join('\n')
 	)
 	process.exit()
@@ -99,7 +99,7 @@ const logger = new Logger()
 const spinner = new Spinner({ style: cli.spinner || 'monkey', interval: 1000 })
 function log(versions) {
 	const messages = []
-	versions.forEach(function(V) {
+	versions.forEach(function (V) {
 		if (V.success === false || cli.verbose) {
 			messages.push(V.message)
 		}
@@ -153,10 +153,10 @@ async function run(nodeVersions) {
 
 // Actually run the versions
 run(nodeVersions)
-	.then(function(versions) {
+	.then(function (versions) {
 		process.exitCode = versions.success ? 0 : 1
 	})
-	.catch(function(err) {
+	.catch(function (err) {
 		spinner.stop()
 		console.error(err)
 		process.exitCode = parseExitCode(err.code) || 1

@@ -76,19 +76,15 @@ class Version extends EventEmitter {
 
 	/**
 	 * The alias for this version if any were provided. E.g. `system` or `current`
-	 * @property {string?} alias
-	 * @public
 	 */
 	get alias() {
 		return this.aliases[0]
 	}
-
 	set alias(alias) {
 		if (alias) {
 			const aliases = this.aliases.concat(alias)
 			this.aliases = uniq(aliases)
 		}
-		return this.aliases
 	}
 
 	/**

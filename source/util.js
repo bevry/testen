@@ -42,5 +42,5 @@ module.exports = {
 	runVersion,
 	runInstall,
 	parseExitCode,
-	uniq
+	uniq,
 }

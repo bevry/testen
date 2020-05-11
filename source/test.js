@@ -47,20 +47,20 @@ async function runTests(command, serial = false) {
 		// Create the versions
 		versions = new Versions(['current', 10, 8])
 		deepEqual(
-			versions.map(V => ({ version: V.version, aliases: V.aliases })),
+			versions.map((V) => ({ version: V.version, aliases: V.aliases })),
 			[
 				{
 					version: '8',
-					aliases: []
+					aliases: [],
 				},
 				{
 					version: '10',
-					aliases: []
+					aliases: [],
 				},
 				{
 					version: 'current',
-					aliases: ['current']
-				}
+					aliases: ['current'],
+				},
 			],
 			'versions are sorted intially correctly'
 		)
@@ -72,25 +72,25 @@ async function runTests(command, serial = false) {
 		await versions.install()
 
 		// Fetch the actual exact versions
-		const nodeCurrentVersion = await runVersion('current').then(result =>
+		const nodeCurrentVersion = await runVersion('current').then((result) =>
 			result.stdout.toString().trim()
 		)
-		const nodeEightVersion = await runVersion(8).then(result =>
+		const nodeEightVersion = await runVersion(8).then((result) =>
 			result.stdout.toString().trim()
 		)
-		const nodeTenVersion = await runVersion(10).then(result =>
+		const nodeTenVersion = await runVersion(10).then((result) =>
 			result.stdout.toString().trim()
 		)
 
 		// Confirm compaction and everything occured correctly
 		const latest = uniq([nodeCurrentVersion, nodeEightVersion, nodeTenVersion])
-			.map(v => ({
+			.map((v) => ({
 				version: v,
-				aliases: isCurrentVersion(nodeCurrentVersion, v) ? ['current'] : []
+				aliases: isCurrentVersion(nodeCurrentVersion, v) ? ['current'] : [],
 			}))
 			.sort(Versions.comparator)
 		deepEqual(
-			versions.map(V => ({ version: V.version, aliases: V.aliases })),
+			versions.map((V) => ({ version: V.version, aliases: V.aliases })),
 			latest,
 			'versions are sorted after load correctly'
 		)
@@ -124,7 +124,7 @@ Promise.resolve()
 			.then(() =>
 				Promise.reject(new Error('planned failure should not be successful'))
 			)
-			.catch(function(err) {
+			.catch(function (err) {
 				if (err.message.indexOf('a testen execution failed') !== -1)
 					return Promise.resolve()
 				return Promise.reject(err)
@@ -136,16 +136,16 @@ Promise.resolve()
 			.then(() =>
 				Promise.reject(new Error('planned failure should not be successful'))
 			)
-			.catch(function(err) {
+			.catch(function (err) {
 				if (err.message.indexOf('a testen execution failed') !== -1)
 					return Promise.resolve()
 				return Promise.reject(err)
 			})
 	)
-	.then(function() {
+	.then(function () {
 		console.log('\ntests were OK')
 	})
-	.catch(function(err) {
+	.catch(function (err) {
 		console.error('\n' + err + '\n')
 		console.error('\ntests were NOT OK')
 		process.exit(parseExitCode(err.code) || 1)

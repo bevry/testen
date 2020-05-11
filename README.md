@@ -53,6 +53,59 @@ As JSON:
 
 <a href="https://asciinema.org/a/XnZasiO2HKi9wnXjd0LJgLjv7?autoplay=1&amp;speed=10"><img src="https://asciinema.org/a/XnZasiO2HKi9wnXjd0LJgLjv7.png" width="350" alt="failure case as JSON"/></a>
 
+## Usage
+
+[Complete API Documentation.](http://master.testen.bevry.surge.sh/docs/index.html)
+
+Testen runs your tests again multiple node versions, however the testen client can only run on Node 8 or higher.
+
+Testen uses [nvm](https://github.com/creationix/nvm) behind the scenes for its node.js version management.
+
+### CLI Usage
+
+You can specify the exact node versions to test your project against by using the `-n <version>` flag (`--node` is also suitable).
+This flag can occur multiple times, and also supports versions seperated by a comma.
+Such that `testen -n 8 -n 10` and `testen -n 8,10` will both use node versions 8 and 10.
+
+If you do not specify any node versions via the CLI arguments, then it will use:
+
+-   the `testen.node` property of your projects `package.json` file
+-   otherwise, the travis or circle ci node versions that you have configured for your project
+-   otherwise, the `current`, `stable`, and `system` versions which are resolved by nvm
+
+If a node version is currently missing, it will be installed for you automatically.
+
+You can specify the exact command to run against your project by placing it after the `--` argument, for example `testen -- echo hello world` to run `echo hello world`.
+If you do not specify a command via the CLI, then it will use:
+
+-   the `testen.command` property of your projects `package.json` file
+-   otherwise, `npm test` is used
+
+Other key arguments are:
+
+-   `--json` will output the results in JSON format, for progamatic consumption
+-   `--verbose` will report the details of all versions, not just the versions that have failed
+-   `--serial` will run the tests serially (one after the other), however for performance, loading of versions still occurs in parallel
+
+And full help, as always is available via `testen --help`.
+
+### API Usage
+
+Testen also provides an API which can be used like so:
+
+```javascript
+const { Versions } = require('@bevry/testen')
+async function main() {
+    const versions = new Versions([4, 8, 10, 'current', 'stable', 'system'])
+    await versions.load()
+    await versions.install()
+    await versions.test()
+    console.log(versions.success)
+}
+main()
+```
+
+[Complete API documentation is available.](http://master.testen.bevry.surge.sh/docs/)
 
 <!-- INSTALL/ -->
 
@@ -68,7 +121,8 @@ As JSON:
 <ul>
 <li>Install: <code>npm install --save @bevry/testen</code></li>
 <li>Executable: <code>npx @bevry/testen</code></li>
-<li>Require: <code>require('@bevry/testen')</code></li>
+<li>Import: <code>import * as pkg from ('@bevry/testen')</code></li>
+<li>Require: <code>const pkg = require('@bevry/testen')</code></li>
 </ul>
 
 <h3><a href="https://editions.bevry.me" title="Editions are the best way to produce and consume packages you care about.">Editions</a></h3>
@@ -76,9 +130,7 @@ As JSON:
 <p>This package is published with the following editions:</p>
 
 <ul><li><code>@bevry/testen</code> aliases <code>@bevry/testen/source/index.js</code></li>
-<li><code>@bevry/testen/source/index.js</code> is esnext source code for Node.js with require for modules</li></ul>
-
-<p>Environments older than Node.js v8 may need <a href="https://babeljs.io/docs/usage/polyfill/" title="A polyfill that emulates missing ECMAScript environment features">Babel's Polyfill</a> or something similar.</p>
+<li><code>@bevry/testen/source/index.js</code> is <a href="https://en.wikipedia.org/wiki/ECMAScript#ES.Next" title="ECMAScript Next">ESNext</a> source code for <a href="https://nodejs.org" title="Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine">Node.js</a> with <a href="https://nodejs.org/dist/latest-v5.x/docs/api/modules.html" title="Node/CJS Modules">Require</a> for modules</li></ul>
 
 <h3><a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a></h3>
 
@@ -93,61 +145,6 @@ This project provides its type information via inline <a href="http://usejsdoc.o
 ```
 
 <!-- /INSTALL -->
-
-
-## Usage
-
-Testen runs your tests again multiple node versions, however the testen client can only run on Node 8 or higher.
-
-Testen uses [nvm](https://github.com/creationix/nvm) behind the scenes for its node.js version management.
-
-
-### CLI Usage
-
-You can specify the exact node versions to test your project against by using the `-n <version>` flag (`--node` is also suitable).
-This flag can occur multiple times, and also supports versions seperated by a comma.
-Such that `testen -n 8 -n 10` and `testen -n 8,10` will both use node versions 8 and 10.
-
-If you do not specify any node versions via the CLI arguments, then it will use:
-
-- the `testen.node` property of your projects `package.json` file
-- otherwise, the travis or circle ci node versions that you have configured for your project
-- otherwise, the `current`, `stable`, and `system` versions which are resolved by nvm
-
-If a node version is currently missing, it will be installed for you automatically.
-
-You can specify the exact command to run against your project by placing it after the `--` argument, for example `testen -- echo hello world` to run `echo hello world`.
-If you do not specify a command via the CLI, then it will use:
-
-- the `testen.command` property of your projects `package.json` file
-- otherwise, `npm test` is used
-
-Other key arguments are:
-
-- `--json` will output the results in JSON format, for progamatic consumption
-- `--verbose` will report the details of all versions, not just the versions that have failed
-- `--serial` will run the tests serially (one after the other), however for performance, loading of versions still occurs in parallel
-
-And full help, as always is available via `testen --help`.
-
-
-### API Usage
-
-Testen also provides an API which can be used like so:
-
-``` javascript
-const {Versions} = require('@bevry/testen')
-async function main () {
-    const versions = new Versions([4, 8, 10, 'current', 'stable', 'system'])
-    await versions.load()
-    await versions.install()
-    await versions.test()
-    console.log(versions.success)
-}
-main()
-```
-
-[Complete API documentation is available.](http://master.testen.bevry.surge.sh/docs/)
 
 
 <!-- HISTORY/ -->
@@ -176,7 +173,7 @@ main()
 
 These amazing people are maintaining this project:
 
-<ul><li><a href="http://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/testen/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/testen">view contributions</a></li></ul>
+<ul><li><a href="https://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/testen/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/testen">view contributions</a></li></ul>
 
 <h3>Sponsors</h3>
 
@@ -196,9 +193,9 @@ No sponsors yet! Will you be the first?
 
 These amazing people have contributed code to this project:
 
-<ul><li><a href="http://patreon.com/egoist">Kevin Titor</a> — <a href="https://github.com/bevry/testen/commits?author=egoist" title="View the GitHub contributions of Kevin Titor on repository bevry/testen">view contributions</a></li>
-<li><a href="http://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/testen/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/testen">view contributions</a></li>
-<li><a href="http://greenkeeper.io/">Greenkeeper</a> — <a href="https://github.com/bevry/testen/commits?author=greenkeeperio-bot" title="View the GitHub contributions of Greenkeeper on repository bevry/testen">view contributions</a></li></ul>
+<ul><li><a href="https://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/testen/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/testen">view contributions</a></li>
+<li><a href="https://github.com/greenkeeperio-bot">Greenkeeper</a> — <a href="https://github.com/bevry/testen/commits?author=greenkeeperio-bot" title="View the GitHub contributions of Greenkeeper on repository bevry/testen">view contributions</a></li>
+<li><a href="https://egoist.sh">Kevin Titor</a> — <a href="https://github.com/bevry/testen/commits?author=egoist" title="View the GitHub contributions of Kevin Titor on repository bevry/testen">view contributions</a></li></ul>
 
 <a href="https://github.com/bevry/testen/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
 
@@ -211,8 +208,8 @@ These amazing people have contributed code to this project:
 
 Unless stated otherwise all works are:
 
-<ul><li>Copyright &copy; 2016-2017 <a href="http://patreon.com/egoist">Kevin Titor</a></li>
-<li>Copyright &copy; 2018+ <a href="http://balupton.com">Benjamin Lupton</a></li></ul>
+<ul><li>Copyright &copy; 2016-2017 <a href="https://egoist.sh">Kevin Titor</a></li>
+<li>Copyright &copy; 2018+ <a href="https://balupton.com">Benjamin Lupton</a></li></ul>
 
 and licensed under:
 

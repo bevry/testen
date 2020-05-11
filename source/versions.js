@@ -32,7 +32,7 @@ class Versions extends EventEmitter {
 		 * @type {Array<Version>}
 		 * @public
 		 */
-		this.array = versions.map(v => {
+		this.array = versions.map((v) => {
 			const V = new Version(v)
 			V.on('update', (...args) => this.emit('update', ...args))
 			return V
@@ -104,7 +104,7 @@ class Versions extends EventEmitter {
 	 */
 	compact() {
 		const map = {}
-		this.array.forEach(function(V) {
+		this.array.forEach(function (V) {
 			if (map[V.version]) {
 				map[V.version].alias = V.alias
 			} else {
@@ -121,7 +121,7 @@ class Versions extends EventEmitter {
 	 * @public
 	 */
 	get success() {
-		const failure = this.array.some(V => V.success === false)
+		const failure = this.array.some((V) => V.success === false)
 		return !failure
 	}
 
@@ -141,7 +141,7 @@ class Versions extends EventEmitter {
 	 */
 	get json() {
 		const results = { success: true }
-		this.array.forEach(function(V) {
+		this.array.forEach(function (V) {
 			results[V.status] = (results[V.status] || []).concat(V.version)
 			if (V.success === false) results.success = false
 		})
@@ -154,7 +154,7 @@ class Versions extends EventEmitter {
 	 * @public
 	 */
 	get table() {
-		return this.array.map(V => V.row)
+		return this.array.map((V) => V.row)
 	}
 
 	/**
@@ -163,7 +163,7 @@ class Versions extends EventEmitter {
 	 * @public
 	 */
 	get messages() {
-		return this.array.map(V => V.message)
+		return this.array.map((V) => V.message)
 	}
 
 	/**
@@ -172,7 +172,7 @@ class Versions extends EventEmitter {
 	 * @returns {Promise}
 	 */
 	async load(compact = true) {
-		await Promise.all(this.array.map(V => V.load()))
+		await Promise.all(this.array.map((V) => V.load()))
 		if (compact) this.compact()
 		this.sort()
 		return this
@@ -183,7 +183,7 @@ class Versions extends EventEmitter {
 	 * @returns {Promise}
 	 */
 	async install() {
-		await Promise.all(this.array.map(V => V.install()))
+		await Promise.all(this.array.map((V) => V.install()))
 		return this
 	}
 
@@ -199,7 +199,7 @@ class Versions extends EventEmitter {
 				await V.test(command)
 			}
 		}
-		await Promise.all(this.array.map(V => V.test(command)))
+		await Promise.all(this.array.map((V) => V.test(command)))
 		return this
 	}
 }

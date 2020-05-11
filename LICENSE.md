@@ -4,8 +4,8 @@
 
 Unless stated otherwise all works are:
 
-<ul><li>Copyright &copy; 2016-2017 <a href="http://patreon.com/egoist">Kevin Titor</a></li>
-<li>Copyright &copy; 2018+ <a href="http://balupton.com">Benjamin Lupton</a></li></ul>
+<ul><li>Copyright &copy; 2016-2017 <a href="https://egoist.sh">Kevin Titor</a></li>
+<li>Copyright &copy; 2018+ <a href="https://balupton.com">Benjamin Lupton</a></li></ul>
 
 and licensed under:
 
