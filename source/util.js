@@ -6,6 +6,12 @@ function trim(string) {
 	return string.replace(/^\s+|\s+$/g, '')
 }
 
+function loadVersion(version) {
+	return exec(
+		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use ${version}`
+	)
+}
+
 function runCommand(version, command) {
 	return exec(
 		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use --silent ${version} && ${command}`
@@ -21,7 +27,7 @@ function runVersion(version) {
 
 function runInstall(version) {
 	return exec(
-		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm install ${version}`
+		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm install --no-progress ${version}`
 	)
 }
 
@@ -39,6 +45,7 @@ function uniq(array) {
 module.exports = {
 	trim,
 	runCommand,
+	loadVersion,
 	runVersion,
 	runInstall,
 	parseExitCode,

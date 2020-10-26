@@ -4,7 +4,14 @@ const chalk = require('chalk')
 const figures = require('figures')
 const { EventEmitter } = require('events')
 const semver = require('semver')
-const { runCommand, runVersion, runInstall, uniq, trim } = require('./util.js')
+const {
+	runCommand,
+	runVersion,
+	runInstall,
+	uniq,
+	trim,
+	loadVersion,
+} = require('./util.js')
 
 /**
  * Version class.
@@ -101,7 +108,7 @@ class Version extends EventEmitter {
 	}
 
 	/**
-	 * Notify that an update has occured, by emitting the update event
+	//  * Notify that an update has occurred, by emitting the update event
 	 * @returns {this}
 	 * @private
 	 */
@@ -121,9 +128,9 @@ class Version extends EventEmitter {
 		this.status = 'loading'
 		this.reset().update()
 
-		const result = await runVersion(this.version)
+		const result = await loadVersion(this.version)
 		if (result.error) {
-			if (result.error.toString().indexOf('not yet installed') !== -1) {
+			if (result.error.toString().includes('not yet installed')) {
 				this.status = 'missing'
 				this.success = false
 			} else {
@@ -134,8 +141,17 @@ class Version extends EventEmitter {
 			this.stdout = (result.stdout || '').toString()
 			this.stderr = (result.stderr || '').toString()
 		} else {
-			this.version = result.stdout.toString()
-			this.status = 'loaded'
+			const result = await runVersion(this.version)
+			if (result.error) {
+				this.status = 'failed'
+				this.success = false
+				this.error = result.error
+				this.stdout = (result.stdout || '').toString()
+				this.stderr = (result.stderr || '').toString()
+			} else {
+				this.version = result.stdout.toString()
+				this.status = 'loaded'
+			}
 		}
 
 		this.update()
@@ -273,7 +289,7 @@ class Version extends EventEmitter {
 			parts.push(chalk.red(this.error.message.split('\n')[0]))
 		}
 
-		// Output stdout and stdderr
+		// Output stdout and stderr
 		if (this.status === 'missing') {
 			parts.push(chalk.red(`You need to run: nvm install ${this.version}`))
 		} else {

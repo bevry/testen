@@ -43,7 +43,7 @@ class Versions extends EventEmitter {
 	}
 
 	/**
-	 * The compartor to use for sorting an array of versions.
+	 * The comparator to use for sorting an array of versions.
 	 * @param {Version} left
 	 * @param {Version} right
 	 * @returns {number}

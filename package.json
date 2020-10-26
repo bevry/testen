@@ -1,6 +1,6 @@
 {
   "name": "@bevry/testen",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "description": "Run your tests locally against multiple node.js versions",
   "homepage": "https://github.com/bevry/testen",
   "license": "MIT",

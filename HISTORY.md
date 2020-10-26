@@ -1,5 +1,10 @@
 # History
 
+## v3.7.1 2020 October 26
+
+-   Fixed break on recent nvm versions
+    -   If --silent was being used and the node version does not exist, then before nvm would error but now it does not, so have adjusted the detection accordingly
+
 ## v3.7.0 2020 May 11
 
 -   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)

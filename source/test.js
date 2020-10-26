@@ -62,7 +62,7 @@ async function runTests(command, serial = false) {
 					aliases: ['current'],
 				},
 			],
-			'versions are sorted intially correctly'
+			'versions are sorted initially correctly'
 		)
 
 		// Load
