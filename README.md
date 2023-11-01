@@ -7,13 +7,12 @@
 
 <!-- BADGES/ -->
 
-<span class="badge-travisci"><a href="http://travis-ci.com/bevry/testen" title="Check this project's build status on TravisCI"><img src="https://img.shields.io/travis/com/bevry/testen/master.svg" alt="Travis CI Build Status" /></a></span>
+<span class="badge-githubworkflow"><a href="https://github.com/bevry/testen/actions?query=workflow%3Abevry" title="View the status of this project's GitHub Workflow: bevry"><img src="https://github.com/bevry/testen/workflows/bevry/badge.svg" alt="Status of the GitHub Workflow: bevry" /></a></span>
 <span class="badge-npmversion"><a href="https://npmjs.org/package/@bevry/testen" title="View this project on NPM"><img src="https://img.shields.io/npm/v/@bevry/testen.svg" alt="NPM version" /></a></span>
 <span class="badge-npmdownloads"><a href="https://npmjs.org/package/@bevry/testen" title="View this project on NPM"><img src="https://img.shields.io/npm/dm/@bevry/testen.svg" alt="NPM downloads" /></a></span>
-<span class="badge-daviddm"><a href="https://david-dm.org/bevry/testen" title="View the status of this project's dependencies on DavidDM"><img src="https://img.shields.io/david/bevry/testen.svg" alt="Dependency Status" /></a></span>
-<span class="badge-daviddmdev"><a href="https://david-dm.org/bevry/testen#info=devDependencies" title="View the status of this project's development dependencies on DavidDM"><img src="https://img.shields.io/david/dev/bevry/testen.svg" alt="Dev Dependency Status" /></a></span>
 <br class="badge-separator" />
 <span class="badge-githubsponsors"><a href="https://github.com/sponsors/balupton" title="Donate to this project using GitHub Sponsors"><img src="https://img.shields.io/badge/github-donate-yellow.svg" alt="GitHub Sponsors donate button" /></a></span>
+<span class="badge-thanksdev"><a href="https://thanks.dev/u/gh/balupton" title="Donate to this project using ThanksDev"><img src="https://img.shields.io/badge/thanksdev-donate-yellow.svg" alt="ThanksDev donate button" /></a></span>
 <span class="badge-patreon"><a href="https://patreon.com/bevry" title="Donate to this project using Patreon"><img src="https://img.shields.io/badge/patreon-donate-yellow.svg" alt="Patreon donate button" /></a></span>
 <span class="badge-flattr"><a href="https://flattr.com/profile/balupton" title="Donate to this project using Flattr"><img src="https://img.shields.io/badge/flattr-donate-yellow.svg" alt="Flattr donate button" /></a></span>
 <span class="badge-liberapay"><a href="https://liberapay.com/bevry" title="Donate to this project using Liberapay"><img src="https://img.shields.io/badge/liberapay-donate-yellow.svg" alt="Liberapay donate button" /></a></span>
@@ -55,7 +54,7 @@ As JSON:
 
 ## Usage
 
-[Complete API Documentation.](http://master.testen.bevry.surge.sh/docs/index.html)
+[Complete API Documentation.](http://master.testen.bevry.surge.sh/docs/)
 
 Testen runs your tests again multiple node versions, however the testen client can only run on Node 8 or higher.
 
@@ -130,7 +129,7 @@ main()
 <p>This package is published with the following editions:</p>
 
 <ul><li><code>@bevry/testen</code> aliases <code>@bevry/testen/source/index.js</code></li>
-<li><code>@bevry/testen/source/index.js</code> is <a href="https://en.wikipedia.org/wiki/ECMAScript#ES.Next" title="ECMAScript Next">ESNext</a> source code for <a href="https://nodejs.org" title="Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine">Node.js</a> with <a href="https://nodejs.org/dist/latest-v5.x/docs/api/modules.html" title="Node/CJS Modules">Require</a> for modules</li></ul>
+<li><code>@bevry/testen/source/index.js</code> is <a href="https://en.wikipedia.org/wiki/ECMAScript#ES.Next" title="ECMAScript Next">ESNext</a> source code for <a href="https://nodejs.org" title="Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine">Node.js</a> 18 || 20 || 21 with <a href="https://nodejs.org/dist/latest-v5.x/docs/api/modules.html" title="Node/CJS Modules">Require</a> for modules</li></ul>
 
 <h3><a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a></h3>
 
@@ -180,6 +179,7 @@ These amazing people are maintaining this project:
 No sponsors yet! Will you be the first?
 
 <span class="badge-githubsponsors"><a href="https://github.com/sponsors/balupton" title="Donate to this project using GitHub Sponsors"><img src="https://img.shields.io/badge/github-donate-yellow.svg" alt="GitHub Sponsors donate button" /></a></span>
+<span class="badge-thanksdev"><a href="https://thanks.dev/u/gh/balupton" title="Donate to this project using ThanksDev"><img src="https://img.shields.io/badge/thanksdev-donate-yellow.svg" alt="ThanksDev donate button" /></a></span>
 <span class="badge-patreon"><a href="https://patreon.com/bevry" title="Donate to this project using Patreon"><img src="https://img.shields.io/badge/patreon-donate-yellow.svg" alt="Patreon donate button" /></a></span>
 <span class="badge-flattr"><a href="https://flattr.com/profile/balupton" title="Donate to this project using Flattr"><img src="https://img.shields.io/badge/flattr-donate-yellow.svg" alt="Flattr donate button" /></a></span>
 <span class="badge-liberapay"><a href="https://liberapay.com/bevry" title="Donate to this project using Liberapay"><img src="https://img.shields.io/badge/liberapay-donate-yellow.svg" alt="Liberapay donate button" /></a></span>
@@ -194,8 +194,8 @@ No sponsors yet! Will you be the first?
 These amazing people have contributed code to this project:
 
 <ul><li><a href="https://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/testen/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/testen">view contributions</a></li>
-<li><a href="https://github.com/greenkeeperio-bot">Greenkeeper</a> — <a href="https://github.com/bevry/testen/commits?author=greenkeeperio-bot" title="View the GitHub contributions of Greenkeeper on repository bevry/testen">view contributions</a></li>
-<li><a href="https://egoist.sh">Kevin Titor</a> — <a href="https://github.com/bevry/testen/commits?author=egoist" title="View the GitHub contributions of Kevin Titor on repository bevry/testen">view contributions</a></li></ul>
+<li><a href="https://egoist.dev">EGOIST</a> — <a href="https://github.com/bevry/testen/commits?author=egoist" title="View the GitHub contributions of EGOIST on repository bevry/testen">view contributions</a></li>
+<li><a href="https://github.com/greenkeeperio-bot">Greenkeeper</a> — <a href="https://github.com/bevry/testen/commits?author=greenkeeperio-bot" title="View the GitHub contributions of Greenkeeper on repository bevry/testen">view contributions</a></li></ul>
 
 <a href="https://github.com/bevry/testen/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
 
@@ -208,11 +208,11 @@ These amazing people have contributed code to this project:
 
 Unless stated otherwise all works are:
 
-<ul><li>Copyright &copy; 2016-2017 <a href="https://egoist.sh">Kevin Titor</a></li>
+<ul><li>Copyright &copy; 2016-2017 <a href="https://egoist.dev">EGOIST</a></li>
 <li>Copyright &copy; 2018+ <a href="https://balupton.com">Benjamin Lupton</a></li></ul>
 
 and licensed under:
 
-<ul><li><a href="http://spdx.org/licenses/MIT.html">MIT License</a></li></ul>
+<ul><li><a href="http://spdx.org/licenses/Artistic-2.0.html">Artistic License 2.0</a></li></ul>
 
 <!-- /LICENSE -->

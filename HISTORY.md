@@ -1,5 +1,16 @@
 # History
 
+## v4.0.0 2023 November 2
+
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+-   Updated license from [`MIT`](http://spdx.org/licenses/MIT.html) to [`Artistic-2.0`](http://spdx.org/licenses/Artistic-2.0.html)
+-   Minimum required node version changed from `node: >=8` to `node: >=18` to keep up with mandatory ecosystem changes
+-   Swapped `chalk` for `@bevry/ansi` to maintain ecosystem compatibility
+-   Swapped `figures` for `@bevry/figures` to maintain ecosystem compatibility
+-   Removed update notifier, and travis or circle functionality
+    -   If no custom config, and `package.json:engines:node` exists, then it now uses all the maintained + historical LTS versions of Node.js that match the engine range
+    -   Otherwise it still fallbacks to the current, stable, and system versions.
+
 ## v3.7.1 2020 October 26
 
 -   Fixed break on recent nvm versions

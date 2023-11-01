@@ -8,17 +8,16 @@ const { parseExitCode } = require('./util.js')
 
 // External
 const fs = require('fs')
+const semver = require('semver')
 const minimist = require('minimist')
-const update = require('update-notifier')
 const textTable = require('text-table')
-const travisOrCircle = require('travis-or-circle')
 const stringWidth = require('string-width')
 const Logger = require('logger-clearable')
 const Spinner = require('spinner-title')
-
-// Fetch our own package configuration, and alert the user if there is an update
-const testenPackage = require('../package.json')
-update({ pkg: testenPackage }).notify()
+const {
+	preloadNodeVersions,
+	filterSignificantNodeVersions,
+} = require('@bevry/nodejs-versions')
 
 // Fetch the user package configuration
 const cwd = process.cwd()
@@ -26,6 +25,10 @@ const userPackagePath = `${cwd}/package.json`
 const userPackage = fs.existsSync(userPackagePath)
 	? require(userPackagePath)
 	: {}
+const userTestenNode = (userPackage.testen && userPackage.testen.node) || ''
+const userEnginesNode = (userPackage.engines && userPackage.engines.node) || ''
+const userTestenCommand =
+	(userPackage.testen && userPackage.testen.command) || ''
 
 // Parse the CLI options
 const cli = minimist(process.argv.slice(2), {
@@ -53,50 +56,33 @@ if (cli.help) {
 			'  --help:                Output this help',
 			'  -- [command]:          The test command you expect',
 			'',
-		].join('\n')
+		].join('\n'),
 	)
 	process.exit()
 }
 
 // Print the version
 if (cli.version) {
+	const testenPackage = require('../package.json')
 	console.log(testenPackage.version)
 	process.exit()
 }
 
-// Prepare
-function table(result) {
-	return textTable(result, { stringLength: stringWidth })
-}
-// const spin = new Hinata({ char: '●', text: '  ', prepend: true, spacing: 1 })
-
 // Determine the test script
 let command = cli['--'].join(' ')
 if (!command) {
-	command =
-		userPackage.testen && userPackage.testen.command
-			? userPackage.testen.command
-			: 'npm test'
-}
-
-// Get node versions from CLI arguments
-// Otherwise package.json:testen:node
-// Otherwise travis or circle
-// Otherwise current and latest
-const nodeVersions = (cli.node
-	? [].concat(cli.node)
-	: (userPackage.testen && userPackage.testen.node) || travisOrCircle() || []
-)
-	.join(' ')
-	.split(/[,\s]+/)
-if (nodeVersions.join('') === '') {
-	nodeVersions.pop()
-	nodeVersions.push('current', 'stable', 'system')
+	command = userTestenCommand || 'npm test'
 }
 
 // Prepare outputs
 const logger = new Logger()
-const spinner = new Spinner({ style: cli.spinner || 'monkey', interval: 1000 })
+const spinner = new Spinner({
+	style: cli.spinner || 'monkey',
+	interval: 1000,
+})
+function table(result) {
+	return textTable(result, { stringLength: stringWidth })
+}
 function log(versions) {
 	const messages = []
 	versions.forEach(function (V) {
@@ -114,16 +100,44 @@ function log(versions) {
 }
 
 // Run the versions
-async function run(nodeVersions) {
+async function run() {
+	// Preload
+	await preloadNodeVersions()
+
+	// Get node versions from CLI arguments
+	// Otherwise package.json:testen:node
+	// Otherwise travis or circle
+	// Otherwise current and latest
+	const nodeVersions = (
+		(cli.node && [].concat(cli.node)) ||
+		userTestenNode ||
+		[]
+	)
+		.join(' ')
+		.split(/[,\s]+/)
+	if (nodeVersions.join('') === '') {
+		nodeVersions.pop()
+		if (userEnginesNode) {
+			nodeVersions.push(
+				...filterSignificantNodeVersions({
+					maintainedOrLTS: true,
+					released: true,
+				}).filter((version) =>
+					semver.satisfies(semver.coerce(version), userEnginesNode),
+				),
+			)
+		} else {
+			nodeVersions.push('current', 'stable', 'system')
+		}
+	}
+
 	// Load the actual versions
 	const versions = new Versions(nodeVersions)
 
-	// Prepare
+	// Output
 	function update() {
 		logger.queue(() => log(versions))
 	}
-
-	// Output
 	if (!cli.json) {
 		// start the spinner
 		spinner.start()
@@ -152,7 +166,7 @@ async function run(nodeVersions) {
 }
 
 // Actually run the versions
-run(nodeVersions)
+run()
 	.then(function (versions) {
 		process.exitCode = versions.success ? 0 : 1
 	})

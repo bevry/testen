@@ -5,7 +5,7 @@ const { EventEmitter } = require('events')
 const semver = require('semver')
 
 /**
- * A JSON object representing the status of our {@link Versoins} instance.
+ * A JSON object representing the status of our {@link Versions} instance.
  * It contains a `success` property, which can be `true` or `false.
  * It also contains the various version numbers mapped to arrays based on their status.
  * @example {"success": true, "passed": ["10.6.0", "10.7.0"]}

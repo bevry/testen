@@ -1,7 +1,7 @@
 'use strict'
 
-const chalk = require('chalk')
-const figures = require('figures')
+const ansi = require('@bevry/ansi')
+const figures = require('@bevry/figures').default
 const { EventEmitter } = require('events')
 const semver = require('semver')
 const {
@@ -227,25 +227,25 @@ class Version extends EventEmitter {
 
 		const indicator =
 			this.success === null
-				? chalk.dim(figures.circle)
+				? ansi.dim(figures.circle)
 				: this.success
-				? chalk.green(figures.tick)
-				: chalk.red(figures.cross)
+				? ansi.green(figures.tick)
+				: ansi.red(figures.cross)
 
 		const result =
 			this.success === null
-				? chalk.dim(this.status)
+				? ansi.dim(this.status)
 				: this.success
-				? chalk.green(this.status)
-				: chalk.red(this.status)
+				? ansi.green(this.status)
+				: ansi.red(this.status)
 
 		// note that caching prevents realtime updates of duration time
 		const duration = this.started
-			? chalk.dim(`${(this.finished || new Date()) - this.started}ms`)
+			? ansi.dim(`${(this.finished || new Date()) - this.started}ms`)
 			: ''
 
 		const aliases = this.aliases.length
-			? chalk.dim(` [${this.aliases.join('|')}]`)
+			? ansi.dim(` [${this.aliases.join('|')}]`)
 			: ''
 
 		const row = ['  ' + indicator, this.version + aliases, result, duration]
@@ -270,39 +270,39 @@ class Version extends EventEmitter {
 		const parts = []
 
 		// fetch heading
-		const heading = `Node version ${chalk.underline(this.version)} ${
+		const heading = `Node version ${ansi.underline(this.version)} ${
 			this.status
 		}`
 		if (this.status === 'missing') {
-			parts.push(chalk.bold(chalk.red(heading)))
+			parts.push(ansi.bold(ansi.red(heading)))
 		} else if (this.success === true) {
-			parts.push(chalk.bold(chalk.green(heading)))
+			parts.push(ansi.bold(ansi.green(heading)))
 		} else if (this.success === false) {
-			parts.push(chalk.bold(chalk.red(heading)))
+			parts.push(ansi.bold(ansi.red(heading)))
 		} else {
 			// running, loading, etc - shown in verbose mode
-			parts.push(chalk.bold(chalk.dim(heading)))
+			parts.push(ansi.bold(ansi.dim(heading)))
 		}
 
 		// Output the command that was run
 		if (this.error) {
-			parts.push(chalk.red(this.error.message.split('\n')[0]))
+			parts.push(ansi.red(this.error.message.split('\n')[0]))
 		}
 
 		// Output stdout and stderr
 		if (this.status === 'missing') {
-			parts.push(chalk.red(`You need to run: nvm install ${this.version}`))
+			parts.push(ansi.red(`You need to run: nvm install ${this.version}`))
 		} else {
 			const stdout = trim(this.stdout || '')
 			const stderr = trim(this.stderr || '')
 			if (!stdout && !stderr) {
-				parts.push(chalk.grey('no output'))
+				parts.push(ansi.dim('no output'))
 			} else {
 				if (stdout) {
 					parts.push(stdout)
 				}
 				if (stderr) {
-					parts.push(chalk.red(stderr))
+					parts.push(ansi.red(stderr))
 				}
 			}
 		}

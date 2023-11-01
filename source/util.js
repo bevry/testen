@@ -8,26 +8,26 @@ function trim(string) {
 
 function loadVersion(version) {
 	return exec(
-		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use ${version}`
+		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use ${version}`,
 	)
 }
 
 function runCommand(version, command) {
 	return exec(
-		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use --silent ${version} && ${command}`
+		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use --silent ${version} && ${command}`,
 	)
 }
 
 function runVersion(version) {
 	return runCommand(
 		version,
-		"node -e 'process.stdout.write(process.versions.node)'"
+		"node -e 'process.stdout.write(process.versions.node)'",
 	)
 }
 
 function runInstall(version) {
 	return exec(
-		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm install --no-progress ${version}`
+		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm install --no-progress ${version}`,
 	)
 }
 
