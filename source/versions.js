@@ -1,7 +1,6 @@
 'use strict'
 
 const Version = require('./version.js')
-const { EventEmitter } = require('events')
 const semver = require('semver')
 
 /**
@@ -16,16 +15,20 @@ const semver = require('semver')
 
 /**
  * Versions class.
- * Emits an `update` event.
  * @class
- * @extends EventEmitter
  * @constructor
  * @param {array} versions
+ * @param {Array<Function>?} listeners
  * @public
  */
-class Versions extends EventEmitter {
-	constructor(versions) {
-		super()
+class Versions {
+	constructor(versions, listeners = []) {
+		/**
+		 * The list of listeners we will call when updates happen.
+		 * @type {Array<Function>}
+		 * @public
+		 */
+		this.listeners = listeners
 
 		/**
 		 * The array of resolved versions.
@@ -33,8 +36,7 @@ class Versions extends EventEmitter {
 		 * @public
 		 */
 		this.array = versions.map((v) => {
-			const V = new Version(v)
-			V.on('update', (...args) => this.emit('update', ...args))
+			const V = new Version(v, this.listeners)
 			return V
 		})
 
@@ -194,6 +196,9 @@ class Versions extends EventEmitter {
 	 * @returns {Promise}
 	 */
 	async test(command, serial = false) {
+		if (!command) {
+			throw new Error('no command provided to the testen versions runner')
+		}
 		if (serial) {
 			for (const V of this.array) {
 				await V.test(command)
