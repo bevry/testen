@@ -2,7 +2,6 @@
 
 const ansi = require('@bevry/ansi')
 const figures = require('@bevry/figures').default
-const { EventEmitter } = require('events')
 const semver = require('semver')
 const {
 	runCommand,
@@ -17,15 +16,13 @@ const {
  * Version class.
  * Emits an `update` event.
  * @class
- * @extends EventEmitter
  * @constructor
  * @param {string|number} version
+ * @param {Array<Function>?} listeners
  * @public
  */
-class Version extends EventEmitter {
-	constructor(version) {
-		super()
-
+class Version {
+	constructor(version, listeners = []) {
 		/**
 		 * The precise version number, or at least the WIP version number until it is resolved further.
 		 * @type {string}
@@ -34,7 +31,14 @@ class Version extends EventEmitter {
 		this.version = String(version)
 
 		/**
-		 * An array of aliases for this versionif any were used.
+		 * The list of listeners we will call when updates happen.
+		 * @type {Array<Function>}
+		 * @public
+		 */
+		this.listeners = listeners
+
+		/**
+		 * An array of aliases for this version if any were used.
 		 * @type {Array<string>}
 		 * @public
 		 */
@@ -55,21 +59,21 @@ class Version extends EventEmitter {
 		this.success = null
 
 		/**
-		 * Any error that occured against this version.
+		 * Any error that occurred against this version.
 		 * @type {Error?}
 		 * @public
 		 */
 		this.error = null
 
 		/**
-		 * The last stdout value that occured against this version.
+		 * The last stdout value that occurred against this version.
 		 * @type {string?}
 		 * @public
 		 */
 		this.stdout = null
 
 		/**
-		 * The last stderr value that occured against this version.
+		 * The last stderr value that occurred against this version.
 		 * @type {string?}
 		 * @public
 		 */
@@ -108,12 +112,14 @@ class Version extends EventEmitter {
 	}
 
 	/**
-	//  * Notify that an update has occurred, by emitting the update event
+	 * Notify that an update has occurred.
+	 * @param {string?} status
 	 * @returns {this}
 	 * @private
 	 */
-	update() {
-		this.emit('update', this)
+	async update(status) {
+		if (status) this.status = status
+		await Promise.all(this.listeners.map((listener) => listener(this)))
 		return this
 	}
 
@@ -126,11 +132,12 @@ class Version extends EventEmitter {
 	 */
 	async load() {
 		this.status = 'loading'
-		this.reset().update()
+		this.reset()
+		await this.update()
 
 		const result = await loadVersion(this.version)
 		if (result.error) {
-			if (result.error.toString().includes('not yet installed')) {
+			if ((result.error || '').toString().includes('not yet installed')) {
 				this.status = 'missing'
 				this.success = false
 			} else {
@@ -154,7 +161,7 @@ class Version extends EventEmitter {
 			}
 		}
 
-		this.update()
+		await this.update()
 		return this
 	}
 
@@ -168,7 +175,8 @@ class Version extends EventEmitter {
 		if (this.status !== 'missing') return this
 
 		this.status = 'installing'
-		this.reset().update()
+		this.reset()
+		await this.update()
 
 		const result = await runInstall(this.version)
 		if (result.error) {
@@ -178,8 +186,7 @@ class Version extends EventEmitter {
 			this.stdout = (result.stdout || '').toString()
 			this.stderr = (result.stderr || '').toString()
 		} else {
-			this.status = 'installed'
-			this.update()
+			await this.update('installed')
 			await this.load()
 		}
 
@@ -194,10 +201,14 @@ class Version extends EventEmitter {
 	 * @public
 	 */
 	async test(command) {
+		if (!command) {
+			throw new Error('no command provided to the testen version runner')
+		}
 		if (this.status !== 'loaded') return this
 
 		this.status = 'running'
-		this.reset().update()
+		this.reset()
+		await this.update()
 
 		this.started = Date.now()
 		const result = await runCommand(this.version, command)
@@ -209,22 +220,18 @@ class Version extends EventEmitter {
 
 		// this.status = output[0] ? (result.error ? 'failed' : 'passed') : 'missing'
 		this.success = Boolean(result.error) === false
-		this.status = this.success ? 'passed' : 'failed'
 
-		this.update()
+		await this.update(this.success ? 'passed' : 'failed')
 		return this
 	}
 
 	/**
 	 * Converts the version properties into an array for use of displaying in a neat table.
-	 * Caches for each status change.
+	 * Doesn't cache as we want to refresh timers.
 	 * @property {Array<string>} row - [icon, version+alias, status, duration]
 	 * @public
 	 */
 	get row() {
-		// Cache
-		if (this._row && this._row[0] === this.status) return this._row[1]
-
 		const indicator =
 			this.success === null
 				? ansi.dim(figures.circle)
@@ -240,8 +247,9 @@ class Version extends EventEmitter {
 				: ansi.red(this.status)
 
 		// note that caching prevents realtime updates of duration time
+		const ms = this.started ? (this.finished || new Date()) - this.started : 0
 		const duration = this.started
-			? ansi.dim(`${(this.finished || new Date()) - this.started}ms`)
+			? ansi.dim(ms > 1000 ? `${Math.round(ms / 1000)}s` : `${ms}ms`)
 			: ''
 
 		const aliases = this.aliases.length
@@ -249,14 +257,11 @@ class Version extends EventEmitter {
 			: ''
 
 		const row = ['  ' + indicator, this.version + aliases, result, duration]
-
-		// Cache
-		this._row = [this.status, row]
 		return row
 	}
 
 	/**
-	 * Converts the version properties a detailed message of what has occured with this version.
+	 * Converts the version properties a detailed message of what has occurred with this version.
 	 * Caches for each status change.
 	 * @property {string} message
 	 * @public

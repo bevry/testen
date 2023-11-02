@@ -1,5 +1,15 @@
 # History
 
+## v5.0.1 2023 November 2
+
+-   Dramatically improved configuration handling
+-   Fixed an issue where the CLI could exit too early, before the result and exit/error status was finished reporting
+-   Testen now fails no test command is provided, rather than always defaulting to `npm test`
+-   Testen is no longer an event emitter, instead pass listeners to the constructor
+-   Testen now updates durations every second via the cli
+    -   Testen no longer caches row output, as it can't generate durations
+    -   Durations are also in milliseconds and seconds now, rather than just milliseconds
+
 ## v4.0.0 2023 November 2
 
 -   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
@@ -7,7 +17,7 @@
 -   Minimum required node version changed from `node: >=8` to `node: >=18` to keep up with mandatory ecosystem changes
 -   Swapped `chalk` for `@bevry/ansi` to maintain ecosystem compatibility
 -   Swapped `figures` for `@bevry/figures` to maintain ecosystem compatibility
--   Removed update notifier, and travis or circle functionality
+-   Removed update notifier, and removed travis or circle functionality
     -   If no custom config, and `package.json:engines:node` exists, then it now uses all the maintained + historical LTS versions of Node.js that match the engine range
     -   Otherwise it still fallbacks to the current, stable, and system versions.
 

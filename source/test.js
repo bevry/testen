@@ -10,29 +10,29 @@ function isCurrentVersion(currentVersion, version) {
 }
 
 async function runTests(command, serial = false) {
-	let versions, updateOrder
-
-	function resetUpdateOrder() {
-		updateOrder = []
-	}
-	function updatesOrdered() {
-		deepEqual(versions.array, updateOrder, 'updates are in order')
-	}
-	function updatesUnordered() {
-		try {
-			updatesOrdered()
-		} catch (err) {
-			// ignore
+	let versions
+	const updates = []
+	function serializeUpdate(V) {
+		return {
+			version: V.version,
+			status: V.status,
+			success: V.success,
+			error: V.error,
+			stdout: V.stdout,
+			stderr: V.stderr,
 		}
-		equal(
-			versions.array,
-			'random order',
-			'updates were in order when they should be random',
-		)
 	}
-	function storeOrder(V) {
-		if (updateOrder.slice(-1)[0] === V) return this
-		updateOrder.push(V)
+	function checkUpdates() {
+		if (serial) {
+			deepEqual(
+				versions.array.map(serializeUpdate),
+				updates.filter((V) => V.status === 'passed' || V.status === 'failed'),
+				'in serial mode, tests ran in order',
+			)
+		}
+	}
+	function storeUpdate(V) {
+		updates.push(serializeUpdate(V))
 	}
 
 	try {
@@ -45,7 +45,7 @@ async function runTests(command, serial = false) {
 		)
 
 		// Create the versions (use old versions as they stay the same, new versions change)
-		versions = new Versions(['current', 10, 8])
+		versions = new Versions(['current', 10, 8], [storeUpdate])
 		deepEqual(
 			versions.map((V) => ({ version: V.version, aliases: V.aliases })),
 			[
@@ -96,11 +96,8 @@ async function runTests(command, serial = false) {
 		)
 
 		// Test
-		versions.on('update', storeOrder)
-		resetUpdateOrder()
 		await versions.test(command, serial)
-		if (serial) updatesOrdered()
-		// else updatesUnordered()
+		checkUpdates()
 
 		// Check how we did
 		if (!versions.success) {

@@ -1,6 +1,6 @@
 {
   "name": "@bevry/testen",
-  "version": "4.0.0",
+  "version": "5.0.1",
   "description": "Run your tests locally against multiple node.js versions",
   "homepage": "https://github.com/bevry/testen",
   "license": "Artistic-2.0",
@@ -97,6 +97,7 @@
     "@bevry/ansi": "^3.3.0",
     "@bevry/figures": "^6.1.0-next.1698850111.f5bb3c31370762d9ad6c5c5dac50637a8dc1840d",
     "@bevry/nodejs-versions": "^2.3.0",
+    "@bevry/wait": "^1.0.0",
     "logger-clearable": "^3.16.0",
     "minimist": "^1.2.8",
     "semver": "^7.5.4",

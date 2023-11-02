@@ -56,37 +56,49 @@ As JSON:
 
 [Complete API Documentation.](http://master.testen.bevry.surge.sh/docs/)
 
-Testen runs your tests again multiple node versions, however the testen client can only run on Node 8 or higher.
-
 Testen uses [nvm](https://github.com/creationix/nvm) behind the scenes for its node.js version management.
 
-### CLI Usage
+### Node.js Versions
 
-You can specify the exact node versions to test your project against by using the `-n <version>` flag (`--node` is also suitable).
-This flag can occur multiple times, and also supports versions seperated by a comma.
-Such that `testen -n 8 -n 10` and `testen -n 8,10` will both use node versions 8 and 10.
+The CLI will determine which Node.js versions to run your tests again in this order of most preferred first:
 
-If you do not specify any node versions via the CLI arguments, then it will use:
+-   use the CLI via `-n <version>` flag (`--node` is also suitable):
+    -   `testen -n 8.0.0 -n 10`
+    -   `testen -n '8 || 10'`
+    -   `testen -n '>=8 <=10'`
+-   use the `package.json` configuration file via:
+    -   `"testen": { "node": ["8.0.0", 10] }`
+    -   `"testen": { "node": "8 || 10" }`
+    -   `"testen": { "node": ">=8 <=10" }`
+-   use the `package.json` configuration file via:
+    -   `"testen": { "node": "8 || 10" }`
+    -   `"testen": { "node": ">=8 <=10" }`
+-   otherwise, the `current`, `stable`, and `system` versions are used which are resolved by nvm
 
--   the `testen.node` property of your projects `package.json` file
--   otherwise, the travis or circle ci node versions that you have configured for your project
--   otherwise, the `current`, `stable`, and `system` versions which are resolved by nvm
+### Command
 
-If a node version is currently missing, it will be installed for you automatically.
+The CLI will default to `npm test` as the command that will run for each Node.js version, however the API has no such default. You can customize this via:
 
-You can specify the exact command to run against your project by placing it after the `--` argument, for example `testen -- echo hello world` to run `echo hello world`.
-If you do not specify a command via the CLI, then it will use:
+-   use the CLI via `-- <command>`, e.g. `testen -- echo hello world`
+-   use the `package.json` configuration file via `"testen": { "serial": true }`
 
--   the `testen.command` property of your projects `package.json` file
--   otherwise, `npm test` is used
+### Serial or Parallel
 
-Other key arguments are:
+By default tests will run in parallel (multiple at once), to use serial, you can either:
 
--   `--json` will output the results in JSON format, for progamatic consumption
--   `--verbose` will report the details of all versions, not just the versions that have failed
--   `--serial` will run the tests serially (one after the other), however for performance, loading of versions still occurs in parallel
+-   use the CLI via `-s` flag (`--serial` is also suitable)
+-   use the `package.json` configuration file via `"testen": { "serial": true }`
 
-And full help, as always is available via `testen --help`.
+### JSON Output
+
+By default Testen will output pretty output, to only output the JSON result, you can either:
+
+-   use the CLI via `-j` flag (`--json` is also suitable)
+-   use the `package.json` configuration file via `"testen": { "json": true }`
+
+### Other CLI Flags
+
+Refer to `testen --help`.
 
 ### API Usage
 
@@ -98,7 +110,7 @@ async function main() {
     const versions = new Versions([4, 8, 10, 'current', 'stable', 'system'])
     await versions.load()
     await versions.install()
-    await versions.test()
+    await versions.test('npm test')
     console.log(versions.success)
 }
 main()

@@ -14,45 +14,35 @@ const textTable = require('text-table')
 const stringWidth = require('string-width')
 const Logger = require('logger-clearable')
 const Spinner = require('spinner-title')
+const wait = require('@bevry/wait').default
 const {
 	preloadNodeVersions,
 	filterSignificantNodeVersions,
 } = require('@bevry/nodejs-versions')
 
-// Fetch the user package configuration
-const cwd = process.cwd()
-const userPackagePath = `${cwd}/package.json`
-const userPackage = fs.existsSync(userPackagePath)
-	? require(userPackagePath)
-	: {}
-const userTestenNode = (userPackage.testen && userPackage.testen.node) || ''
-const userEnginesNode = (userPackage.engines && userPackage.engines.node) || ''
-const userTestenCommand =
-	(userPackage.testen && userPackage.testen.command) || ''
-
-// Parse the CLI options
+// Parse the CLI
 const cli = minimist(process.argv.slice(2), {
 	'--': true,
 	alias: {
 		j: 'json',
 		n: 'node',
+		s: 'serial',
 	},
-	string: ['node'],
+	string: ['node', 'spinner'],
+	// boolean: ['json', 'serial', 'verbose'], <-- this defaults to false instead of null, preventing accurate fallbacks
 })
-
-// Print the help
 if (cli.help) {
-	console.log(
+	// Output the help and eixt
+	process.stdout.write(
 		[
-			'',
 			'Usage:',
 			'',
+			'  -n/--node [version]:   Add a Node.js version to test',
+			'  -s/--serial:           Run tests serially, one after the other',
 			'  -j/--json:             Output the test results as JSON',
-			'  -n/--node [version]:   Add a node version to test',
-			'  --serial:              Run tests serially, one after the other',
 			'  --spinner [spinner]    Which spinner to use in the title bar',
 			'  --verbose:             Report details about all statuses, not just failures',
-			'  --version:             Output the version of testen',
+			'  --version:             Output the version of Testen',
 			'  --help:                Output this help',
 			'  -- [command]:          The test command you expect',
 			'',
@@ -60,105 +50,129 @@ if (cli.help) {
 	)
 	process.exit()
 }
-
-// Print the version
 if (cli.version) {
+	// Print the version and exit
 	const testenPackage = require('../package.json')
-	console.log(testenPackage.version)
+	process.stdout.write(testenPackage.version + '\n')
 	process.exit()
 }
 
-// Determine the test script
-let command = cli['--'].join(' ')
-if (!command) {
-	command = userTestenCommand || 'npm test'
-}
+// Create the CLI configuration
+const cliTestenConfig = {}
+if (cli.node)
+	cliTestenConfig.node =
+		Array.isArray(cli.node) && cli.node.length === 1 ? cli.node[0] : cli.node
+if (cli['--'] && cli['--'].join(''))
+	cliTestenConfig.command = cli['--'].join(' ')
+if (cli.spinner != null) cliTestenConfig.spinner = cli.spinner
+if (cli.serial != null) cliTestenConfig.serial = cli.serial
+if (cli.json != null) cliTestenConfig.json = cli.json
+if (cli.verbose != null) cliTestenConfig.verbose = cli.verbose
 
-// Prepare outputs
+// Prepare the globals
+let spinner // defined later once config loaded
 const logger = new Logger()
-const spinner = new Spinner({
-	style: cli.spinner || 'monkey',
-	interval: 1000,
-})
-function table(result) {
-	return textTable(result, { stringLength: stringWidth })
-}
-function log(versions) {
-	const messages = []
-	versions.forEach(function (V) {
-		if (V.success === false || cli.verbose) {
-			messages.push(V.message)
-		}
-	})
-	if (messages.length) {
-		return (
-			'\n' + messages.join('\n\n') + '\n\n' + table(versions.table) + '\n\n'
+const table = (result) => textTable(result, { stringLength: stringWidth })
+
+// Prepare our runner
+async function run(customTestenConfig = {}) {
+	// Fetch the user package configuration
+	const cwd = process.cwd()
+	const userPackagePath = `${cwd}/package.json`
+	const userPackage = fs.existsSync(userPackagePath)
+		? require(userPackagePath)
+		: {}
+
+	// Merge the default, package, and custom configuration
+	const testenConfig = Object.assign(
+		{
+			node: (userPackage.engines && userPackage.engines.node) || '',
+			command: 'npm test',
+			spinner: 'monkey',
+			serial: false,
+			json: false,
+			verbose: false,
+		},
+		userPackage.testen || {},
+		customTestenConfig,
+	)
+
+	// Parse node versions
+	const nodeVersions = []
+	if (Array.isArray(testenConfig.node) && testenConfig.node.length) {
+		// specific versions
+		nodeVersions.push(...testenConfig.node)
+	} else if (testenConfig.node && /^[\d\w.-]+$/.test(testenConfig.node)) {
+		// specific version
+		nodeVersions.push(testenConfig.node)
+	} else if (testenConfig.node) {
+		// range
+		await preloadNodeVersions()
+		nodeVersions.push(
+			...filterSignificantNodeVersions({
+				maintainedOrLTS: true,
+				released: true,
+			}).filter((version) =>
+				semver.satisfies(semver.coerce(version), testenConfig.node),
+			),
 		)
 	} else {
-		return '\n' + table(versions.table) + '\n\n'
+		nodeVersions.push('current', 'stable', 'system')
 	}
-}
-
-// Run the versions
-async function run() {
-	// Preload
-	await preloadNodeVersions()
-
-	// Get node versions from CLI arguments
-	// Otherwise package.json:testen:node
-	// Otherwise travis or circle
-	// Otherwise current and latest
-	const nodeVersions = (
-		(cli.node && [].concat(cli.node)) ||
-		userTestenNode ||
-		[]
-	)
-		.join(' ')
-		.split(/[,\s]+/)
-	if (nodeVersions.join('') === '') {
-		nodeVersions.pop()
-		if (userEnginesNode) {
-			nodeVersions.push(
-				...filterSignificantNodeVersions({
-					maintainedOrLTS: true,
-					released: true,
-				}).filter((version) =>
-					semver.satisfies(semver.coerce(version), userEnginesNode),
-				),
-			)
-		} else {
-			nodeVersions.push('current', 'stable', 'system')
-		}
+	if (!nodeVersions || !nodeVersions.length) {
+		throw new Error('No node versions specified')
 	}
 
-	// Load the actual versions
-	const versions = new Versions(nodeVersions)
-
-	// Output
-	function update() {
-		logger.queue(() => log(versions))
-	}
-	if (!cli.json) {
-		// start the spinner
+	// Create the tTesten instance
+	const listeners = [],
+		interval = null
+	if (!testenConfig.json) {
+		// create and start spinner
+		spinner = new Spinner({
+			style: testenConfig.spinner,
+			interval: 1000,
+		})
 		spinner.start()
-
-		// keep the user updated with new events
-		versions.on('update', update)
+		// prepare the logging, note that logger-clearable uses setImmediate, so requires a wait
+		/* eslint-disable-next-line no-inner-declarations */
+		function refresh(versions) {
+			const messages = []
+			versions.forEach(function (V) {
+				if (V.success === false || testenConfig.verbose) {
+					messages.push(V.message)
+				}
+			})
+			if (messages.length) {
+				return (
+					'\n' + messages.join('\n\n') + '\n\n' + table(versions.table) + '\n\n'
+				)
+			} else {
+				return '\n' + table(versions.table) + '\n\n'
+			}
+		}
+		/* eslint-disable-next-line no-inner-declarations */
+		function refresher() {
+			/* eslint-disable-next-line no-use-before-define */
+			logger.queue(() => refresh(versions))
+		}
+		setInterval(refresher, 1000)
+		listeners.push(refresher)
 	}
+	const versions = new Versions(nodeVersions, listeners)
 
 	// Run
 	await versions.load()
 	await versions.install()
-	await versions.test(command, cli.serial)
+	await versions.test(testenConfig.command, testenConfig.serial)
 
-	// Output
-	if (!cli.json) {
-		// Cleanup
-		spinner.stop()
-		versions.removeListener('update', update)
+	// Finish up
+	if (testenConfig.json) {
+		// Output JSON
+		process.stdout.write(JSON.stringify(versions.json, null, '  '))
 	} else {
-		// Output
-		console.log(JSON.stringify(versions.json, null, '  '))
+		clearInterval(interval) // stop the refresh interval
+		spinner.stop() // stop the spinner
+		await wait(0) // wait for the logger to finish
 	}
 
 	// Return the versions object
@@ -166,12 +180,12 @@ async function run() {
 }
 
 // Actually run the versions
-run()
+run(cliTestenConfig)
 	.then(function (versions) {
 		process.exitCode = versions.success ? 0 : 1
 	})
 	.catch(function (err) {
-		spinner.stop()
-		console.error(err)
-		process.exitCode = parseExitCode(err.code) || 1
+		if (spinner) spinner.stop()
+		process.stderr.write((err.stack || err.message || err).toString())
+		process.exitCode = parseExitCode(err.code) || 2
 	})
