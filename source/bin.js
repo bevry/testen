@@ -46,7 +46,7 @@ if (cli.help) {
 			'  --help:                Output this help',
 			'  -- [command]:          The test command you expect',
 			'',
-		].join('\n'),
+		].join('\n')
 	)
 	process.exit()
 }
@@ -94,7 +94,7 @@ async function run(customTestenConfig = {}) {
 			verbose: false,
 		},
 		userPackage.testen || {},
-		customTestenConfig,
+		customTestenConfig
 	)
 
 	// Parse node versions
@@ -113,8 +113,8 @@ async function run(customTestenConfig = {}) {
 				maintainedOrLTS: true,
 				released: true,
 			}).filter((version) =>
-				semver.satisfies(semver.coerce(version), testenConfig.node),
-			),
+				semver.satisfies(semver.coerce(version), testenConfig.node)
+			)
 		)
 	} else {
 		nodeVersions.push('current', 'stable', 'system')

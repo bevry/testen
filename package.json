@@ -1,6 +1,6 @@
 {
   "name": "@bevry/testen",
-  "version": "5.0.2",
+  "version": "6.0.0",
   "description": "Run your tests locally against multiple node.js versions",
   "homepage": "https://github.com/bevry/testen",
   "license": "Artistic-2.0",
@@ -72,11 +72,11 @@
     "url": "https://github.com/bevry/testen.git"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=8"
   },
   "editions": [
     {
-      "description": "ESNext source code for Node.js 18 || 20 || 21 with Require for modules",
+      "description": "ESNext source code for Node.js 8 || 10 || 12 || 14 || 16 || 18 || 20 || 21 with Require for modules",
       "directory": "source",
       "entry": "index.js",
       "tags": [
@@ -86,7 +86,7 @@
         "require"
       ],
       "engines": {
-        "node": "18 || 20 || 21"
+        "node": "8 || 10 || 12 || 14 || 16 || 18 || 20 || 21"
       }
     }
   ],
@@ -94,41 +94,41 @@
   "type": "commonjs",
   "main": "source/index.js",
   "dependencies": {
-    "@bevry/ansi": "^3.3.0",
+    "@bevry/ansi": "^6.1.0",
     "@bevry/figures": "^6.1.0-next.1698850111.f5bb3c31370762d9ad6c5c5dac50637a8dc1840d",
-    "@bevry/nodejs-versions": "^2.3.0",
-    "@bevry/wait": "^1.0.0",
-    "logger-clearable": "^3.16.0",
+    "@bevry/nodejs-versions": "^2.4.0",
+    "@bevry/wait": "^2.0.0",
+    "logger-clearable": "^4.1.0",
     "minimist": "^1.2.8",
     "semver": "^7.5.4",
-    "spinner-title": "^3.16.0",
-    "string-width": "^4.2.0",
+    "spinner-title": "^4.0.0",
+    "string-width": "^7.0.0",
     "text-table": "^0.2.0",
     "then-exec": "^0.0.1"
   },
   "devDependencies": {
-    "@bevry/update-contributors": "^1.22.0",
-    "assert-helpers": "^8.4.0",
-    "eslint": "^8.52.0",
-    "eslint-config-bevry": "^3.28.0",
+    "@bevry/update-contributors": "^1.23.0",
+    "assert-helpers": "^11.2.0",
+    "eslint": "^8.53.0",
+    "eslint-config-bevry": "^4.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "jsdoc": "^4.0.2",
-    "kava": "^5.15.0",
-    "prettier": "^3.0.3",
-    "projectz": "^2.23.0",
+    "kava": "^7.1.0",
+    "prettier": "^3.1.0",
+    "projectz": "^3.0.0",
     "surge": "^0.23.1",
-    "valid-directory": "^4.0.0"
+    "valid-directory": "^4.1.0"
   },
   "scripts": {
     "our:bin": "node ./bin.cjs",
-    "our:clean": "rm -Rf ./docs ./edition* ./es2015 ./es5 ./out ./.next",
+    "our:clean": "rm -rf ./docs ./edition* ./es2015 ./es5 ./out ./.next",
     "our:compile": "printf '%s\n' 'no need for this project'",
     "our:deploy": "printf '%s\n' 'no need for this project'",
     "our:meta": "npm run our:meta:contributors && npm run our:meta:docs && npm run our:meta:projectz",
     "our:meta:contributors": "update-contributors",
     "our:meta:docs": "npm run our:meta:docs:jsdoc",
-    "our:meta:docs:jsdoc": "rm -Rf ./docs && jsdoc --recurse --pedantic --access all --destination ./docs --package ./package.json --readme ./README.md ./source && mv ./docs/$npm_package_name/$npm_package_version/* ./docs/ && rm -Rf ./docs/$npm_package_name/$npm_package_version",
+    "our:meta:docs:jsdoc": "rm -rf ./docs && jsdoc --recurse --pedantic --access all --destination ./docs --package ./package.json --readme ./README.md ./source && mv ./docs/$npm_package_name/$npm_package_version/* ./docs/ && rm -rf ./docs/$npm_package_name/$npm_package_version",
     "our:meta:projectz": "projectz compile",
     "our:release": "npm run our:release:prepare && npm run our:release:check-changelog && npm run our:release:check-dirty && npm run our:release:tag && npm run our:release:push",
     "our:release:check-changelog": "cat ./HISTORY.md | grep \"v$npm_package_version\" || (printf '%s\n' \"add a changelog entry for v$npm_package_version\" && exit -1)",
@@ -152,6 +152,7 @@
   },
   "prettier": {
     "semi": false,
-    "singleQuote": true
+    "singleQuote": true,
+    "trailingComma": "es5"
   }
 }

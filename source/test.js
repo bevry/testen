@@ -27,7 +27,7 @@ async function runTests(command, serial = false) {
 			deepEqual(
 				versions.array.map(serializeUpdate),
 				updates.filter((V) => V.status === 'passed' || V.status === 'failed'),
-				'in serial mode, tests ran in order',
+				'in serial mode, tests ran in order'
 			)
 		}
 	}
@@ -41,7 +41,7 @@ async function runTests(command, serial = false) {
 			'Running tests on node version',
 			process.versions.node,
 			'with command:',
-			command,
+			command
 		)
 
 		// Create the versions (use old versions as they stay the same, new versions change)
@@ -62,7 +62,7 @@ async function runTests(command, serial = false) {
 					aliases: ['current'],
 				},
 			],
-			'versions are sorted initially correctly',
+			'versions are sorted initially correctly'
 		)
 
 		// Load
@@ -73,13 +73,13 @@ async function runTests(command, serial = false) {
 
 		// Fetch the actual exact versions
 		const nodeCurrentVersion = await runVersion('current').then((result) =>
-			result.stdout.toString().trim(),
+			result.stdout.toString().trim()
 		)
 		const nodeEightVersion = await runVersion(8).then((result) =>
-			result.stdout.toString().trim(),
+			result.stdout.toString().trim()
 		)
 		const nodeTenVersion = await runVersion(10).then((result) =>
-			result.stdout.toString().trim(),
+			result.stdout.toString().trim()
 		)
 
 		// Confirm compaction and everything occured correctly
@@ -92,7 +92,7 @@ async function runTests(command, serial = false) {
 		deepEqual(
 			versions.map((V) => ({ version: V.version, aliases: V.aliases })),
 			latest,
-			'versions are sorted after load correctly',
+			'versions are sorted after load correctly'
 		)
 
 		// Test
@@ -103,8 +103,8 @@ async function runTests(command, serial = false) {
 		if (!versions.success) {
 			return Promise.reject(
 				new Error(
-					'a testen execution failed:\n\n' + versions.messages.join('\n\n'),
-				),
+					'a testen execution failed:\n\n' + versions.messages.join('\n\n')
+				)
 			)
 		} else {
 			return versions
@@ -119,25 +119,25 @@ Promise.resolve()
 	.then(() =>
 		runTests('echo planned failure && exit 1')
 			.then(() =>
-				Promise.reject(new Error('planned failure should not be successful')),
+				Promise.reject(new Error('planned failure should not be successful'))
 			)
 			.catch(function (err) {
 				if (err.message.indexOf('a testen execution failed') !== -1)
 					return Promise.resolve()
 				return Promise.reject(err)
-			}),
+			})
 	)
 	.then(() => runTests('echo planned success in serial mode', true))
 	.then(() =>
 		runTests('echo planned failure in serial mode && exit 1', true)
 			.then(() =>
-				Promise.reject(new Error('planned failure should not be successful')),
+				Promise.reject(new Error('planned failure should not be successful'))
 			)
 			.catch(function (err) {
 				if (err.message.indexOf('a testen execution failed') !== -1)
 					return Promise.resolve()
 				return Promise.reject(err)
-			}),
+			})
 	)
 	.then(function () {
 		console.log('\ntests were OK')
