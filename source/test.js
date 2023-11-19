@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint no-console:0 */
+
 // external
 const { deepEqual } = require('assert-helpers')
 const versionRange = require('version-range').default
@@ -65,12 +67,15 @@ async function runTests(command, serial = false) {
 		)
 
 		// Load
+		console.log('loading versions')
 		await versions.load()
 
 		// Install
+		console.log('installing versions')
 		await versions.install()
 
 		// Fetch the actual exact versions
+		console.log('testing versions')
 		const nodeCurrentVersion = await runVersion('current').then((result) =>
 			lastLine(result.stdout),
 		)
@@ -81,7 +86,7 @@ async function runTests(command, serial = false) {
 			lastLine(result.stdout),
 		)
 
-		// Confirm compaction and everything occured correctly
+		// Confirm compaction and everything occurred correctly
 		const latest = uniq([nodeCurrentVersion, nodeEightVersion, nodeTenVersion])
 			.map((v) => ({
 				version: v,

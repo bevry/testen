@@ -72,7 +72,9 @@ if (cli.verbose != null) cliTestenConfig.verbose = cli.verbose
 // Prepare the globals
 let spinner // defined later once config loaded
 const logger = new Logger()
-const table = (result) => textTable(result, { stringLength: stringWidth })
+function table(result) {
+	return textTable(result, { stringLength: stringWidth })
+}
 
 // Prepare our runner
 async function run(customTestenConfig = {}) {
