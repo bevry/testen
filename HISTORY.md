@@ -1,5 +1,10 @@
 # History
 
+## v6.1.0 2023 November 19
+
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+-   Drop `semver` dependency for [version-clean](https://github.com/bevry/version-clean), [version-compare](https://github.com/bevry/version-compare), [version-range](https://github.com/bevry/version-range) which are lightweight alternatives, with better ecosystem support
+
 ## v6.0.0 2023 November 14
 
 -   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)

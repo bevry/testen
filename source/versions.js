@@ -1,7 +1,11 @@
 'use strict'
 
+// external
+const versionClean = require('version-clean').default
+const versionCompare = require('version-compare').default
+
+// local
 const Version = require('./version.js')
-const semver = require('semver')
 
 /**
  * A JSON object representing the status of our {@link Versions} instance.
@@ -53,19 +57,18 @@ class Versions {
 	 * @public
 	 */
 	static comparator(left, right) {
-		const a = semver.coerce(left.version)
-		const b = semver.coerce(right.version)
-
+		const a = versionClean(left.version)
+		const b = versionClean(right.version)
 		if (!a) {
+			// a was an alias, put it last
 			return 1
 		} else if (!b) {
+			// b was an alias, put it last
 			return -1
-		} else if (semver.gt(a, b)) {
-			return 1
-		} else if (semver.lt(a, b)) {
-			return -1
+		} else {
+			// otherwise do normal sorting
+			return versionCompare(a, b)
 		}
-		return 0
 	}
 
 	/**

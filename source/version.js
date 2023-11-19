@@ -1,8 +1,11 @@
 'use strict'
 
+// external
 const ansi = require('@bevry/ansi')
 const figures = require('@bevry/figures').default
-const semver = require('semver')
+const versionClean = require('version-clean').default
+
+// local
 const {
 	runCommand,
 	runVersion,
@@ -79,8 +82,8 @@ class Version {
 		 */
 		this.stderr = null
 
-		// Set alias
-		if (semver.coerce(this.version) == null) {
+		// If it fails to pass, then it is an alias, not a version
+		if (!versionClean(this.version)) {
 			this.alias = this.version
 		}
 	}

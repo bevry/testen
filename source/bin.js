@@ -8,7 +8,7 @@ const { parseExitCode } = require('./util.js')
 
 // External
 const fs = require('fs')
-const semver = require('semver')
+const versionRange = require('version-range').default
 const minimist = require('minimist')
 const textTable = require('text-table')
 const stringWidth = require('string-width')
@@ -46,7 +46,7 @@ if (cli.help) {
 			'  --help:                Output this help',
 			'  -- [command]:          The test command you expect',
 			'',
-		].join('\n')
+		].join('\n'),
 	)
 	process.exit()
 }
@@ -94,7 +94,7 @@ async function run(customTestenConfig = {}) {
 			verbose: false,
 		},
 		userPackage.testen || {},
-		customTestenConfig
+		customTestenConfig,
 	)
 
 	// Parse node versions
@@ -112,9 +112,7 @@ async function run(customTestenConfig = {}) {
 			...filterSignificantNodeVersions({
 				maintainedOrLTS: true,
 				released: true,
-			}).filter((version) =>
-				semver.satisfies(semver.coerce(version), testenConfig.node)
-			)
+			}).filter((version) => versionRange(version, testenConfig.node)),
 		)
 	} else {
 		nodeVersions.push('current', 'stable', 'system')

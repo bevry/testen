@@ -1,6 +1,6 @@
 {
   "name": "@bevry/testen",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "Run your tests locally against multiple node.js versions",
   "homepage": "https://github.com/bevry/testen",
   "license": "Artistic-2.0",
@@ -28,18 +28,19 @@
       "githubsponsors",
       "thanksdev",
       "patreon",
-      "flattr",
       "liberapay",
       "buymeacoffee",
       "opencollective",
       "crypto",
       "paypal",
-      "wishlist"
+      "---",
+      "discord",
+      "twitch"
     ],
     "config": {
       "githubWorkflow": "bevry",
       "githubSponsorsUsername": "balupton",
-      "thanksdevGithubUsername": "balupton",
+      "thanksdevGithubUsername": "bevry",
       "buymeacoffeeUsername": "balupton",
       "cryptoURL": "https://bevry.me/crypto",
       "flattrUsername": "balupton",
@@ -48,6 +49,9 @@
       "patreonUsername": "bevry",
       "paypalURL": "https://bevry.me/paypal",
       "wishlistURL": "https://bevry.me/wishlist",
+      "discordServerID": "1147436445783560193",
+      "discordServerInvite": "nQuXddV7VP",
+      "twitchUsername": "balupton",
       "githubUsername": "bevry",
       "githubRepository": "testen",
       "githubSlug": "bevry/testen",
@@ -94,31 +98,33 @@
   "type": "commonjs",
   "main": "source/index.js",
   "dependencies": {
-    "@bevry/ansi": "^6.1.0",
+    "@bevry/ansi": "^6.3.0",
     "@bevry/figures": "^6.1.0-next.1698850111.f5bb3c31370762d9ad6c5c5dac50637a8dc1840d",
     "@bevry/nodejs-versions": "^2.4.0",
-    "@bevry/wait": "^2.0.0",
-    "logger-clearable": "^4.1.0",
+    "@bevry/wait": "^2.1.0",
+    "logger-clearable": "^4.2.0",
     "minimist": "^1.2.8",
-    "semver": "^7.5.4",
-    "spinner-title": "^4.0.0",
+    "spinner-title": "^4.1.0",
     "string-width": "^7.0.0",
     "text-table": "^0.2.0",
-    "then-exec": "^0.0.1"
+    "then-exec": "^0.0.1",
+    "version-clean": "^1.0.0",
+    "version-compare": "^3.2.0",
+    "version-range": "^3.2.0"
   },
   "devDependencies": {
     "@bevry/update-contributors": "^1.23.0",
-    "assert-helpers": "^11.2.0",
-    "eslint": "^8.53.0",
-    "eslint-config-bevry": "^4.0.0",
+    "assert-helpers": "^11.4.0",
+    "eslint": "^8.54.0",
+    "eslint-config-bevry": "^5.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "jsdoc": "^4.0.2",
-    "kava": "^7.1.0",
+    "kava": "^7.2.0",
     "prettier": "^3.1.0",
-    "projectz": "^3.0.0",
+    "projectz": "^3.2.0",
     "surge": "^0.23.1",
-    "valid-directory": "^4.1.0"
+    "valid-directory": "^4.4.0"
   },
   "scripts": {
     "our:bin": "node ./bin.cjs",
@@ -153,6 +159,10 @@
   "prettier": {
     "semi": false,
     "singleQuote": true,
-    "trailingComma": "es5"
+    "trailingComma": "all"
+  },
+  "boundation": {
+    "maintainedNodeVersions": true,
+    "expandNodeVersions": true
   }
 }
