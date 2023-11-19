@@ -72,13 +72,13 @@ async function runTests(command, serial = false) {
 
 		// Fetch the actual exact versions
 		const nodeCurrentVersion = await runVersion('current').then((result) =>
-			result.stdout.toString().trim(),
+			result.stdout.toString().trim().split('\n').slice(-1)[0].trim(),
 		)
 		const nodeEightVersion = await runVersion(8).then((result) =>
-			result.stdout.toString().trim(),
+			result.stdout.toString().trim().split('\n').slice(-1)[0].trim(),
 		)
 		const nodeTenVersion = await runVersion(10).then((result) =>
-			result.stdout.toString().trim(),
+			result.stdout.toString().trim().split('\n').slice(-1)[0].trim(),
 		)
 
 		// Confirm compaction and everything occured correctly
