@@ -13,6 +13,7 @@ const {
 	uniq,
 	trim,
 	loadVersion,
+	lastLine,
 } = require('./util.js')
 
 /**
@@ -159,7 +160,7 @@ class Version {
 				this.stdout = (result.stdout || '').toString()
 				this.stderr = (result.stderr || '').toString()
 			} else {
-				this.version = result.stdout.toString()
+				this.version = lastLine(result.stdout)
 				this.status = 'loaded'
 			}
 		}

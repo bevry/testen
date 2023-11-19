@@ -6,7 +6,7 @@ const versionRange = require('version-range').default
 
 // local
 const Versions = require('./versions.js')
-const { runVersion, parseExitCode, uniq } = require('./util.js')
+const { runVersion, parseExitCode, uniq, lastLine } = require('./util.js')
 
 async function runTests(command, serial = false) {
 	let versions
@@ -72,13 +72,13 @@ async function runTests(command, serial = false) {
 
 		// Fetch the actual exact versions
 		const nodeCurrentVersion = await runVersion('current').then((result) =>
-			result.stdout.toString().trim().split('\n').slice(-1)[0].trim(),
+			lastLine(result.stdout),
 		)
 		const nodeEightVersion = await runVersion(8).then((result) =>
-			result.stdout.toString().trim().split('\n').slice(-1)[0].trim(),
+			lastLine(result.stdout),
 		)
 		const nodeTenVersion = await runVersion(10).then((result) =>
-			result.stdout.toString().trim().split('\n').slice(-1)[0].trim(),
+			lastLine(result.stdout),
 		)
 
 		// Confirm compaction and everything occured correctly

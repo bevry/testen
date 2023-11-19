@@ -31,6 +31,10 @@ function runInstall(version) {
 	)
 }
 
+function lastLine(string) {
+	return string.toString().trim().split('\n').slice(-1)[0].trim()
+}
+
 function parseExitCode(code) {
 	// needed, as sometimes error codes aren't numbers :angry_face:
 	const number = Number(code)
@@ -50,4 +54,5 @@ module.exports = {
 	runInstall,
 	parseExitCode,
 	uniq,
+	lastLine,
 }
