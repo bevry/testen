@@ -28,7 +28,7 @@ const {
 class Version {
 	constructor(version, listeners = []) {
 		/**
-		 * The precise version number, or at least the WIP version number until it is resolved further.
+		 * The precise version number, or at least the WIP version number/alias until it is resolved further.
 		 * @type {string}
 		 * @public
 		 */
@@ -48,12 +48,26 @@ class Version {
 		 */
 		this.aliases = []
 
+		// If it fails to pass, then it is an alias, not a version
+		if (!versionClean(this.version)) {
+			// this uses a setter to add to this.aliases
+			this.alias = this.version
+		}
+
 		/**
 		 * The current status of this version, initially it is `pending`.
 		 * @type {string}
 		 * @public
 		 */
 		this.status = 'pending'
+
+		/**
+		 * The version resolution that was successfully loaded.
+		 * For instance, if a nvm alias is used such as "current" which resolves to 18.18.2 which is the system Node.js version, but is not installed via nvm itself, then trying to resolve "18.18.2" will fail with [version "v18.18.2" is not yet installed] but the original "current" resolution will work.
+		 * @type {string?}
+		 * @public
+		 */
+		this.loadedVersion = null
 
 		/**
 		 * Whether or not this version has been successful.
@@ -82,11 +96,6 @@ class Version {
 		 * @public
 		 */
 		this.stderr = null
-
-		// If it fails to pass, then it is an alias, not a version
-		if (!versionClean(this.version)) {
-			this.alias = this.version
-		}
 	}
 
 	/**
@@ -160,7 +169,8 @@ class Version {
 				this.stdout = (result.stdout || '').toString()
 				this.stderr = (result.stderr || '').toString()
 			} else {
-				this.version = lastLine(result.stdout)
+				this.loadedVersion = this.loadedVersion || this.version
+				this.version = lastLine(result.stdout) // resolve the version
 				this.status = 'loaded'
 			}
 		}
@@ -215,7 +225,7 @@ class Version {
 		await this.update()
 
 		this.started = Date.now()
-		const result = await runCommand(this.version, command)
+		const result = await runCommand(this.loadedVersion || this.version, command)
 		this.finished = Date.now()
 
 		this.error = result.error
