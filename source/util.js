@@ -14,7 +14,7 @@ function loadVersion(version) {
 
 function runCommand(version, command) {
 	return exec(
-		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use ${version} && ${command}`,
+		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use --silent ${version} && ${command}`,
 	)
 }
 

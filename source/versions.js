@@ -3,6 +3,7 @@
 // external
 const versionClean = require('version-clean').default
 const versionCompare = require('version-compare').default
+const versionRange = require('version-range').default
 
 // local
 const Version = require('./version.js')
@@ -39,13 +40,10 @@ class Versions {
 		 * @type {Array<Version>}
 		 * @public
 		 */
-		this.array = versions.map((v) => {
-			const V = new Version(v, this.listeners)
-			return V
-		})
+		this.array = []
 
-		// Sort
-		this.sort()
+		// Add the versions
+		this.add(versions)
 	}
 
 	/**
@@ -69,6 +67,39 @@ class Versions {
 			// otherwise do normal sorting
 			return versionCompare(a, b)
 		}
+	}
+
+	/**
+	 * Add version(s) to the list.
+	 * @param {Version|Array<Version>} versions
+	 * @returns {this}
+	 * @public
+	 */
+	add(versions) {
+		if (!Array.isArray(versions)) versions = [versions]
+		this.array.push(
+			...versions.map((v) => {
+				const V = new Version(v, this.listeners)
+				return V
+			}),
+		)
+		this.compact()
+		return this
+	}
+
+	/**
+	 * Get a version(s) from the list.
+	 * @param {Version} version number or alias
+	 * @returns {this}
+	 * @public
+	 */
+	get(version) {
+		return (
+			this.array.find((V) => V.version === version) ||
+			this.array.find((V) => V.aliases.includes(version)) ||
+			this.array.find((V) => versionRange(V.version, version)) ||
+			null
+		)
 	}
 
 	/**
@@ -117,6 +148,7 @@ class Versions {
 			}
 		})
 		this.array = Object.values(map)
+		this.sort()
 		return this
 	}
 

@@ -3,12 +3,12 @@
 /* eslint no-console:0 */
 
 // external
-const { deepEqual } = require('assert-helpers')
-const versionRange = require('version-range').default
+const { equal, deepEqual } = require('assert-helpers')
+const nodeProcessVersion = process.versions.node
 
 // local
 const Versions = require('./versions.js')
-const { runVersion, parseExitCode, uniq, lastLine } = require('./util.js')
+const { parseExitCode } = require('./util.js')
 
 async function runTests(command, serial = false) {
 	let versions
@@ -37,7 +37,7 @@ async function runTests(command, serial = false) {
 	}
 
 	try {
-		// Note
+		// log
 		console.log(
 			'Running tests on node version',
 			process.versions.node,
@@ -45,7 +45,7 @@ async function runTests(command, serial = false) {
 			command,
 		)
 
-		// Create the versions (use old versions as they stay the same, new versions change)
+		// create the versions (use old versions as they stay the same, new versions change)
 		versions = new Versions(['current', 10, 8], [storeUpdate])
 		deepEqual(
 			versions.map((V) => ({ version: V.version, aliases: V.aliases })),
@@ -66,44 +66,50 @@ async function runTests(command, serial = false) {
 			'versions are sorted initially correctly',
 		)
 
-		// Load
-		console.log('loading versions')
+		// resolve/load versions
 		await versions.load()
 
-		// Install
-		console.log('installing versions')
+		// install missing versions
 		await versions.install()
 
-		// Fetch the actual exact versions
-		console.log('testing versions')
-		const nodeCurrentVersion = await runVersion('current').then((result) =>
-			lastLine(result.stdout),
-		)
-		const nodeEightVersion = await runVersion(8).then((result) =>
-			lastLine(result.stdout),
-		)
-		const nodeTenVersion = await runVersion(10).then((result) =>
-			lastLine(result.stdout),
+		// fetch the resolved versions
+		const nodeCurrentVersion = versions.get('current')?.version
+		const nodeEightVersion = versions.get(8)?.version
+		const nodeTenVersion = versions.get(10)?.version
+
+		// node current version is the process version
+		equal(
+			nodeCurrentVersion,
+			nodeProcessVersion,
+			'Node.js current version resolved to Node.js process version',
 		)
 
-		// Confirm compaction and everything occurred correctly
-		const latest = uniq([nodeCurrentVersion, nodeEightVersion, nodeTenVersion])
-			.map((v) => ({
-				version: v,
-				aliases: versionRange(nodeCurrentVersion, v) ? ['current'] : [],
-			}))
-			.sort(Versions.comparator)
+		// confirm version fetching, confirm compation, confirm sorting
+		const latest = [
+			{
+				version: nodeEightVersion,
+				aliases: [],
+			},
+			{
+				version: nodeTenVersion,
+				aliases: [],
+			},
+			{
+				version: nodeCurrentVersion,
+				aliases: ['current'],
+			},
+		]
 		deepEqual(
 			versions.map((V) => ({ version: V.version, aliases: V.aliases })),
 			latest,
 			'versions are sorted after load correctly',
 		)
 
-		// Test
+		// run our test on them
 		await versions.test(command, serial)
 		checkUpdates()
 
-		// Check how we did
+		// check how we did
 		if (!versions.success) {
 			return Promise.reject(
 				new Error(
