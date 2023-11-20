@@ -1,19 +1,20 @@
-'use strict'
-
 /* eslint no-console:0 */
 
 // external
-const { equal, deepEqual } = require('assert-helpers')
-const nodeProcessVersion = process.versions.node
+import { equal, deepEqual } from 'assert-helpers'
 
 // local
-const Versions = require('./versions.js')
-const { parseExitCode } = require('./util.js')
+import { Version, Versions } from './index.js'
+import { parseExitCode } from './util.js'
 
-async function runTests(command, serial = false) {
-	let versions
-	const updates = []
-	function serializeUpdate(V) {
+// vars
+import process from 'node:process'
+const nodeProcessVersion = process.versions.node
+
+async function runTests(command: string, serial = false) {
+	let versions: Versions
+	const updates: any[] = []
+	function serializeUpdate(V: Version) {
 		return {
 			version: V.version,
 			status: V.status,
@@ -32,7 +33,7 @@ async function runTests(command, serial = false) {
 			)
 		}
 	}
-	function storeUpdate(V) {
+	function storeUpdate(V: Version) {
 		updates.push(serializeUpdate(V))
 	}
 
@@ -48,7 +49,10 @@ async function runTests(command, serial = false) {
 		// create the versions (use old versions as they stay the same, new versions change)
 		versions = new Versions(['current', 10, 8], [storeUpdate])
 		deepEqual(
-			versions.map((V) => ({ version: V.version, aliases: V.aliases })),
+			versions.array.map((V: Version) => ({
+				version: V.version,
+				aliases: V.aliases,
+			})),
 			[
 				{
 					version: '8',
@@ -74,8 +78,8 @@ async function runTests(command, serial = false) {
 
 		// fetch the resolved versions
 		const nodeCurrentVersion = versions.get('current')?.version
-		const nodeEightVersion = versions.get(8)?.version
-		const nodeTenVersion = versions.get(10)?.version
+		const nodeEightVersion = versions.get('8')?.version
+		const nodeTenVersion = versions.get('10')?.version
 
 		// node current version is the process version
 		equal(
@@ -100,7 +104,10 @@ async function runTests(command, serial = false) {
 			},
 		]
 		deepEqual(
-			versions.map((V) => ({ version: V.version, aliases: V.aliases })),
+			versions.array.map((V: Version) => ({
+				version: V.version,
+				aliases: V.aliases,
+			})),
 			latest,
 			'versions are sorted after load correctly',
 		)

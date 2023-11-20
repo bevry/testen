@@ -1,58 +1,45 @@
-'use strict'
+import exec from 'then-exec'
 
-const exec = require('then-exec')
-
-function trim(string) {
+export function trim(string: string) {
 	return string.replace(/^\s+|\s+$/g, '')
 }
 
-function loadVersion(version) {
+export function loadVersion(version: string | number) {
 	return exec(
 		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use ${version}`,
 	)
 }
 
-function runCommand(version, command) {
+export function runCommand(version: string | number, command: string) {
 	return exec(
 		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm use ${version} && ${command}`,
 	)
 }
 
-function runVersion(version) {
+export function runVersion(version: string | number) {
 	return runCommand(
 		version,
 		"node -e 'process.stdout.write(process.versions.node)'",
 	)
 }
 
-function runInstall(version) {
+export function runInstall(version: string | number) {
 	return exec(
 		`unset npm_config_prefix && . ~/.nvm/nvm.sh && nvm install --no-progress ${version}`,
 	)
 }
 
-function lastLine(string) {
+export function lastLine(string: any) {
 	return string.toString().trim().split('\n').slice(-1)[0].trim()
 }
 
-function parseExitCode(code) {
+export function parseExitCode(code: any) {
 	// needed, as sometimes error codes aren't numbers :angry_face:
 	const number = Number(code)
 	if (isNaN(number)) return null
 	return number
 }
 
-function uniq(array) {
+export function uniq(array: any[]) {
 	return [...new Set(array)]
-}
-
-module.exports = {
-	trim,
-	runCommand,
-	loadVersion,
-	runVersion,
-	runInstall,
-	parseExitCode,
-	uniq,
-	lastLine,
 }

@@ -1,9 +1,16 @@
 # History
 
+## v7.0.0 2023 November 20
+
+-   Rewrote in TypeScript
+-   Removed `map` and `forEach` helpers on `Versions`
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+-   Minimum required Node.js version changed from `node: >=8` to `node: >=18` adapting to ecosystem changes
+
 ## v6.1.0 2023 November 19
 
--   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
 -   Drop `semver` dependency for [version-clean](https://github.com/bevry/version-clean), [version-compare](https://github.com/bevry/version-compare), [version-range](https://github.com/bevry/version-range) which are lightweight alternatives, with better ecosystem support
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
 
 ## v6.0.0 2023 November 14
 

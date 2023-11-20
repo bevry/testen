@@ -1,13 +1,13 @@
 {
   "name": "@bevry/testen",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "description": "Run your tests locally against multiple node.js versions",
   "homepage": "https://github.com/bevry/testen",
   "license": "Artistic-2.0",
   "keywords": [
     "cli",
     "cli-app",
-    "esnext",
+    "es2022",
     "multi",
     "n",
     "node",
@@ -17,7 +17,8 @@
     "testing",
     "travis",
     "typed",
-    "types"
+    "types",
+    "typescript"
   ],
   "badges": {
     "list": [
@@ -76,32 +77,69 @@
     "url": "https://github.com/bevry/testen.git"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=18"
   },
   "editions": [
     {
-      "description": "ESNext source code for Node.js 8 || 10 || 12 || 14 || 16 || 18 || 20 || 21 with Require for modules",
+      "description": "TypeScript source code with Import for modules",
       "directory": "source",
-      "entry": "index.js",
+      "entry": "index.ts",
       "tags": [
         "source",
+        "typescript",
+        "import"
+      ],
+      "engines": false
+    },
+    {
+      "description": "TypeScript compiled against ES2022 for Node.js 18 || 20 || 21 with Require for modules",
+      "directory": "edition-es2022",
+      "entry": "index.js",
+      "tags": [
+        "compiled",
         "javascript",
-        "esnext",
+        "es2022",
         "require"
       ],
       "engines": {
-        "node": "8 || 10 || 12 || 14 || 16 || 18 || 20 || 21"
+        "node": "18 || 20 || 21",
+        "browsers": false
+      }
+    },
+    {
+      "description": "TypeScript compiled against ES2022 for Node.js 18 || 20 || 21 with Import for modules",
+      "directory": "edition-es2022-esm",
+      "entry": "index.js",
+      "tags": [
+        "compiled",
+        "javascript",
+        "es2022",
+        "import"
+      ],
+      "engines": {
+        "node": "18 || 20 || 21",
+        "browsers": false
       }
     }
   ],
   "bin": "bin.cjs",
-  "type": "commonjs",
-  "main": "source/index.js",
+  "types": "./compiled-types/",
+  "type": "module",
+  "main": "edition-es2022/index.js",
+  "exports": {
+    "node": {
+      "import": "./edition-es2022-esm/index.js",
+      "require": "./edition-es2022/index.js"
+    }
+  },
   "dependencies": {
     "@bevry/ansi": "^6.3.0",
     "@bevry/figures": "^6.1.0-next.1698850111.f5bb3c31370762d9ad6c5c5dac50637a8dc1840d",
+    "@bevry/fs-readable": "^2.0.0",
+    "@bevry/json": "^1.9.0",
     "@bevry/nodejs-versions": "^2.4.0",
     "@bevry/wait": "^2.1.0",
+    "filedirname": "^2.10.0",
     "logger-clearable": "^4.2.0",
     "minimist": "^1.2.8",
     "spinner-title": "^4.1.0",
@@ -110,31 +148,38 @@
     "then-exec": "^0.0.1",
     "version-clean": "^1.0.0",
     "version-compare": "^3.2.0",
-    "version-range": "^3.2.0"
+    "version-range": "^4.2.0"
   },
   "devDependencies": {
     "@bevry/update-contributors": "^1.23.0",
+    "@types/node": "^20.9.2",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
     "assert-helpers": "^11.4.0",
     "eslint": "^8.54.0",
     "eslint-config-bevry": "^5.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "jsdoc": "^4.0.2",
     "kava": "^7.2.0",
     "prettier": "^3.1.0",
     "projectz": "^3.2.0",
     "surge": "^0.23.1",
+    "typedoc": "^0.25.3",
+    "typescript": "5.2.2",
     "valid-directory": "^4.4.0"
   },
   "scripts": {
     "our:bin": "node ./bin.cjs",
     "our:clean": "rm -rf ./docs ./edition* ./es2015 ./es5 ./out ./.next",
-    "our:compile": "printf '%s\n' 'no need for this project'",
+    "our:compile": "npm run our:compile:edition-es2022 && npm run our:compile:edition-es2022-esm && npm run our:compile:types",
+    "our:compile:edition-es2022": "tsc --module commonjs --target ES2022 --outDir ./edition-es2022 --project tsconfig.json && ( test ! -d edition-es2022/source || ( mv edition-es2022/source edition-temp && rm -rf edition-es2022 && mv edition-temp edition-es2022 ) ) && printf '%s' '{\"type\": \"commonjs\"}' > edition-es2022/package.json",
+    "our:compile:edition-es2022-esm": "tsc --module ESNext --target ES2022 --outDir ./edition-es2022-esm --project tsconfig.json && ( test ! -d edition-es2022-esm/source || ( mv edition-es2022-esm/source edition-temp && rm -rf edition-es2022-esm && mv edition-temp edition-es2022-esm ) ) && printf '%s' '{\"type\": \"module\"}' > edition-es2022-esm/package.json",
+    "our:compile:types": "tsc --project tsconfig.json --emitDeclarationOnly --declaration --declarationMap --declarationDir ./compiled-types && ( test ! -d compiled-types/source || ( mv compiled-types/source edition-temp && rm -rf compiled-types && mv edition-temp compiled-types ) )",
     "our:deploy": "printf '%s\n' 'no need for this project'",
     "our:meta": "npm run our:meta:contributors && npm run our:meta:docs && npm run our:meta:projectz",
     "our:meta:contributors": "update-contributors",
-    "our:meta:docs": "npm run our:meta:docs:jsdoc",
-    "our:meta:docs:jsdoc": "rm -rf ./docs && jsdoc --recurse --pedantic --access all --destination ./docs --package ./package.json --readme ./README.md ./source && mv ./docs/$npm_package_name/$npm_package_version/* ./docs/ && rm -rf ./docs/$npm_package_name/$npm_package_version",
+    "our:meta:docs": "npm run our:meta:docs:typedoc",
+    "our:meta:docs:typedoc": "rm -rf ./docs && typedoc --exclude '**/+(*test*|node_modules)' --excludeExternals --out ./docs ./source",
     "our:meta:projectz": "projectz compile",
     "our:release": "npm run our:release:prepare && npm run our:release:check-changelog && npm run our:release:check-dirty && npm run our:release:tag && npm run our:release:push",
     "our:release:check-changelog": "cat ./HISTORY.md | grep \"v$npm_package_version\" || (printf '%s\n' \"add a changelog entry for v$npm_package_version\" && exit -1)",
@@ -149,7 +194,7 @@
     "our:verify:directory": "valid-directory",
     "our:verify:eslint": "eslint --fix --ignore-pattern '**/*.d.ts' --ignore-pattern '**/vendor/' --ignore-pattern '**/node_modules/' --ext .mjs,.js,.jsx,.ts,.tsx ./source",
     "our:verify:prettier": "prettier --write .",
-    "test": "node ./source/test.js"
+    "test": "node ./edition-es2022/test.js"
   },
   "eslintConfig": {
     "extends": [
@@ -163,6 +208,6 @@
   },
   "boundation": {
     "maintainedNodeVersions": true,
-    "expandNodeVersions": true
+    "expandNodeVersions": false
   }
 }
