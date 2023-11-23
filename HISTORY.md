@@ -1,5 +1,25 @@
 # History
 
+## v9.0.0 2023 November 23
+
+-   Testen v8.0.0 supported Node.js v14 and v16 via the API, however the CLI did not, because the CLI depends on `string-width` which is a Sindre package that depends on dozens of other Sindre packages, and all Sindre packages needlessly break support for Node.js versions <=v18 and CJS modules (needless as they could have just used boundation)
+-   As such, the minimum required Node.js version changed from `node: >=14` to `node: >=18` and only ESM is now exported.
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+
+This resolves the error:
+
+```
+/opt/homebrew/lib/node_modules/@bevry/testen/edition-es2022/bin.js:15
+const string_width_1 = __importDefault(require("string-width"));
+                                       ^
+
+Error [ERR_REQUIRE_ESM]: require() of ES Module /opt/homebrew/lib/node_modules/@bevry/testen/node_modules/string-width/index.js from /opt/homebrew/lib/node_modules/@bevry/testen/edition-es2022/bin.js not supported.
+Instead change the require of index.js in /opt/homebrew/lib/node_modules/@bevry/testen/edition-es2022/bin.js to a dynamic import() which is available in all CommonJS modules.
+    at Object.<anonymous> (/opt/homebrew/lib/node_modules/@bevry/testen/edition-es2022/bin.js:15:40) {
+  code: 'ERR_REQUIRE_ESM'
+}
+```
+
 ## v8.0.0 2023 November 21
 
 -   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
