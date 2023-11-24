@@ -1,5 +1,9 @@
 # History
 
+## v9.1.0 2023 November 25
+
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+
 ## v9.0.0 2023 November 23
 
 -   Testen v8.0.0 supported Node.js v14 and v16 via the API, however the CLI did not, because the CLI depends on `string-width` which is a Sindre package that depends on dozens of other Sindre packages, and all Sindre packages needlessly break support for Node.js versions <=v18 and CJS modules (needless as they could have just used boundation)
