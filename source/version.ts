@@ -223,15 +223,15 @@ export class Version {
 			this.success === null
 				? ansi.dim(figures.circle)
 				: this.success
-				  ? ansi.green(figures.tick)
-				  : ansi.red(figures.cross)
+					? ansi.green(figures.tick)
+					: ansi.red(figures.cross)
 
 		const result =
 			this.success === null
 				? ansi.dim(this.status)
 				: this.success
-				  ? ansi.green(this.status)
-				  : ansi.red(this.status)
+					? ansi.green(this.status)
+					: ansi.red(this.status)
 
 		// note that caching prevents realtime updates of duration time
 		const ms = this.started ? (this.finished || getTime()) - this.started : 0

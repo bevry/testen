@@ -1,17 +1,17 @@
 <!-- LICENSEFILE/ -->
 
-<h1>License</h1>
+# License
 
 Unless stated otherwise all works are:
 
-<ul><li>Copyright &copy; 2016-2017 <a href="https://egoist.dev">EGOIST</a></li>
-<li>Copyright &copy; 2018+ <a href="https://balupton.com">Benjamin Lupton</a></li></ul>
+-   Copyright &copy; 2018+ [Benjamin Lupton](https://balupton.com)
+-   Copyright &copy; 2016-2017 [EGOIST](https://egoist.dev)
 
 and licensed under:
 
-<ul><li><a href="http://spdx.org/licenses/Artistic-2.0.html">Artistic License 2.0</a></li></ul>
+-   [Artistic License 2.0](http://spdx.org/licenses/Artistic-2.0.html)
 
-<h2>The Artistic License 2.0</h2>
+## The Artistic License 2.0
 
 <pre>
 Copyright (c) 2000-2006, The Perl Foundation.
